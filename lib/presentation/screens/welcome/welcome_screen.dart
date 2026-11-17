@@ -4,22 +4,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({super.key});
-  void _showAvailability(BuildContext context, String resource) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(resource),
-        content: Text('$resource estará disponível em uma etapa posterior.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Entendi'),
-          ),
-        ],
-      ),
-    );
-  }
+  const WelcomeScreen({this.onSignIn, this.onRegister, super.key});
+  final VoidCallback? onSignIn;
+  final VoidCallback? onRegister;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -56,7 +43,7 @@ class WelcomeScreen extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton(
-                          onPressed: () => _showAvailability(context, 'Entrar'),
+                          onPressed: onSignIn,
                           child: const Text('Entrar'),
                         ),
                       ),
@@ -64,8 +51,7 @@ class WelcomeScreen extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
-                          onPressed: () =>
-                              _showAvailability(context, 'Criar conta'),
+                          onPressed: onRegister,
                           child: const Text('Criar conta'),
                         ),
                       ),

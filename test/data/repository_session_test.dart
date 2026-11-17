@@ -90,6 +90,26 @@ void main() {
     auth.user = null;
     expect(() => session.verify('B'), throwsA(isA<DataFailure>()));
   });
+  test(
+    'Perfil recusa UID esperado divergente antes de ler ou gravar Firestore',
+    () async {
+      auth.user = TestUser('B');
+      final users = FirestoreUserRepository(session);
+      final changed = throwsA(
+        isA<DataFailure>().having(
+          (e) => e.kind,
+          'kind',
+          DataFailureKind.sessionChanged,
+        ),
+      );
+      await expectLater(users.fetch(expectedUserId: 'A'), changed);
+      await expectLater(
+        users.ensureProfile(displayName: 'Nome A', expectedUserId: 'A'),
+        changed,
+      );
+      // NoFirestore não implementa acesso a documentos: qualquer consulta falharia.
+    },
+  );
   test('Recusa cursor de outro usuário e tamanho de página inválido', () async {
     auth.user = TestUser('A');
     final repository = FirestoreTransactionRepository(session);

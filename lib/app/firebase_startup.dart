@@ -8,11 +8,15 @@ import '../core/theme/app_spacing.dart';
 class FirebaseStartup extends StatefulWidget {
   const FirebaseStartup({
     required this.initialize,
-    required this.child,
+    this.child,
+    this.childBuilder,
     super.key,
-  });
+  }) : assert((child == null) != (childBuilder == null));
   final Future<void> Function() initialize;
-  final Widget child;
+  final Widget? child;
+
+  /// Permite construir o gate/composição somente após inicialização confirmada.
+  final WidgetBuilder? childBuilder;
   @override
   State<FirebaseStartup> createState() => _FirebaseStartupState();
 }
@@ -94,7 +98,7 @@ class _FirebaseStartupState extends State<FirebaseStartup> {
           ),
         );
       }
-      return widget.child;
+      return widget.childBuilder?.call(context) ?? widget.child!;
     },
   );
 }

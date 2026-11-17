@@ -12,6 +12,8 @@ abstract final class AppTheme {
         ).copyWith(
           primary: AppColors.primary,
           onPrimary: Colors.white,
+          primaryContainer: AppColors.mintSurface,
+          onPrimaryContainer: AppColors.primary,
           secondary: AppColors.secondary,
           onSecondary: AppColors.textPrimary,
           surface: AppColors.surface,
@@ -159,6 +161,8 @@ abstract final class AppTheme {
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
+        errorStyle: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
+        errorMaxLines: 3,
         filled: true,
         fillColor: AppColors.surfaceMuted,
         contentPadding: const EdgeInsets.all(AppSpacing.base),

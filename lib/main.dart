@@ -1,22 +1,32 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'app/app.dart';
 import 'app/firebase_startup.dart';
+import 'app/app_dependencies.dart';
+import 'app/auth_experience.dart';
 import 'firebase_options.dart';
-import 'presentation/screens/welcome/welcome_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  late AppDependencies dependencies;
   runApp(
     BolsoZenApp(
       home: FirebaseStartup(
         initialize: () async {
-          await Firebase.initializeApp(
+          final app = await Firebase.initializeApp(
             options: DefaultFirebaseOptions.currentPlatform,
           );
+          dependencies = await AppDependencies.create(
+            auth: FirebaseAuth.instanceFor(app: app),
+            firestore: FirebaseFirestore.instanceFor(app: app),
+          );
         },
-        child: const WelcomeScreen(),
+        childBuilder: (_) => AuthExperience(
+          createController: dependencies.createSessionController,
+        ),
       ),
     ),
   );

@@ -1,5 +1,399 @@
 # BolsoZen — Progresso
 
+## M4 — Encerrado e aprovado pelo usuário com ressalvas
+
+O usuário revisou e aprovou o funcionamento e o visual da autenticação e autorizou expressamente encerrar o M4 com as limitações abaixo, sem repetir a homologação completa. Este aceite substitui o estado de revisão pendente dos registros históricos M4.1–M4.6, sem transformar testes não executados em aprovações.
+
+Entregues login, cadastro real, recuperação de senha, perfil mínimo, conclusão de perfil ausente, sessão e navegação protegida. Aparência e funcionamento aprovados manualmente no Safari/iPhone. O usuário confirmou recebimento do e-mail/redefinição efetiva e persistência após reabertura ou reload. Android normal compilado, instalado e executado; telas públicas e reabertura sem sessão observadas.
+
+Evidências preservadas: **301 testes Flutter aprovados**; **19 verificações locais Dart/FlutterFire aprovadas no M4.5** (12 anteriores e 7 novas), além de 6 testes Node da asserção UI. A bateria Chrome UI M4.6 permanece parcial: 3 verificações confirmadas, uma aprovação bruta invalidada e execução interrompida por OOM; não foi reexecutada. Analyzer: 0 erros/warnings, **20 informes de depreciação**, exit 1 pelos informes. Não houve nova execução de testes neste encerramento documental.
+
+### Ressalvas aceitas e transferidas para M9
+
+- Persistência autenticada após encerramento/reabertura real do processo Android ainda não homologada, incluindo perfil/logout/Voltar nesse roteiro nativo.
+- Completar a bateria Chrome automatizada em origem fixa após avaliação de recursos e autorização de nova execução; preservados OOM e a revisão da asserção sem aprovar resultados inexistentes.
+- Teclado virtual nativo e TalkBack sem homologação manual completa; manter validações de responsividade/texto ampliado na homologação final.
+- Revisar os 20 informes do analyzer sem supressão ou migração de dependências não aprovada.
+
+Essas limitações **não impedem o encerramento do M4**, por decisão explícita do usuário. Foram incluídas no planejamento oficial do M9 em [PLANO.md](PLANO.md). Relatório técnico e escopos exatos em [M4_HOMOLOGACAO.md](M4_HOMOLOGACAO.md). Não repetir automaticamente testes remotos ou criar contas para saná-las.
+
+### Revisão pré-commit do M4
+
+Branch main confirmada; revisão restrita às alterações de autenticação M4.1–M4.6, testes/runners locais, evidências sanitizadas e documentação de encerramento/transferência das ressalvas para M9. Os diffs de UserRepository/FirestoreUserRepository são as barreiras de sessão expectedUserId aprovadas no M4.3, não novas funcionalidades financeiras. Fixtures dos testes e imagens são sintéticas/identificadas, sem dados pessoais reais; senhas de integração são aleatórias somente em memória. Logs, dumps, perfis de navegador e builds permanecem locais/ignorados.
+
+Executados git status e git diff --check. Seleção preparada por lista explícita de **83 arquivos do M4**: 58 fontes/documentos/JSON de evidências e 25 screenshots. Revisão de padrões de chaves privadas, credenciais administrativas, tokens OAuth/JWT/GitHub e import de Admin sem achados; endereços encontrados são fixtures de exemplo, sem dados pessoais reais identificados. Isso complementa a inspeção dos diffs e imagens, sem tratar scanner como prova absoluta. Lista/artefatos auxiliares da revisão ficam em build/, ignorados. Exigidos git diff --cached --check e conferência final antes do commit autorizado `feat: implementar autenticacao completa BolsoZen`. Excluído da seleção assets/illustrations/google-services.json, mantido intacto e não rastreado. Nenhum push, deploy, alteração Firebase ou instalação de dependências autorizado nesta tarefa. Hash e estado pós-commit serão apresentados no relatório da entrega, sem outro commit para gravar o próprio hash.
+
+Próxima etapa: apresentar o escopo original do M5 (Dashboard e transações essenciais) para revisão. **M5 não implementado e ainda exige autorização específica.** Google Login e BolsoZen Bot continuam ideias futuras fora do MVP.
+
+## M4.6 — Homologação parcial, relatório entregue para revisão
+
+**M4.1–M4.5 aprovados pelo usuário; M4.6 autorizado exclusivamente. M4 ainda não concluído e M5 não autorizado.** Registros abaixo são históricos; suas restrições de autorização antigas não substituem a autorização atual.
+
+Relatório completo, matriz de cobertura, screenshots e roteiro de pendências: [M4_HOMOLOGACAO.md](M4_HOMOLOGACAO.md).
+
+### Aceite manual informado pelo usuário
+
+Safari/iPhone: onboarding/identidade, login, cadastro, recuperação e fluxos Firebase aprovados. O usuário confirmou adicionalmente recebimento do e-mail e redefinição efetiva da senha pelo link, além de persistência após fechar/reabrir ou recarregar o navegador. Evidência manual do usuário, sem atribuí-la a execução automatizada do agente ou inferir validação Android/Chrome equivalente. Nenhuma credencial foi solicitada e nenhum novo e-mail real foi enviado pelo agente.
+
+### Android normal — evidências obtidas
+
+MSI 127.0.0.1:5556, Android 9/API 28/x64. Executado lib/main.dart, sem runner M3: uma compilação assembleDebug em 33,0 s, APK gerado. Instalação streaming ficou sem progresso em 20,65%; interrompida e substituída por `adb install --no-streaming -r -t` usando o mesmo APK, sem nova compilação ou limpeza dos dados; resultado Success.
+
+Inicialização Firebase/composição/gate e boas-vindas sem sessão confirmados. Abertas telas reais de login, recuperação e cadastro; retorno da recuperação ao login e navegação ao cadastro confirmados. Campo recebeu foco/texto ilustrativo publico@example.test, sem senha ou submit. Capturas públicas em `docs/evidencias/m4-6/android/`.
+
+Android reconheceu InputConnection e mInputShown=true; porém configuração show_ime_with_hard_keyboard=0 e capturas sem teclado virtual visível. Não declarar IME visual/TalkBack homologados. Viewport observado aproximadamente 720×1280 dp (1080×1920 pixels, densidade 240), distinto das larguras dos testes de widgets.
+
+Processo realmente encerrado via force-stop e reaberto preservando dados: PID 7378 -> 7876, boas-vindas confirmada após aguardar inicialização. Isso valida **reabertura sem sessão**, não persistência autenticada. Captura transitória do launcher durante inicialização foi substituída pela evidência correta, e o helper passou a recusar telas fora do pacote. Na consulta final, o MSI já não estava disponível por ADB; não houve reconexão automática.
+
+Não executados cadastro/login remotos, perfil autenticado, logout/Voltar pós-logout ou reinício com sessão válida no Android. Nenhuma nova conta remota foi autorizada; A/B/C não utilizadas. APK foi compilado antes das duas trocas equivalentes de imports abaixo; código final verificado por analyzer/testes, sem recompilar Android.
+
+### Chrome local — interrupção e revisão das evidências
+
+Entry point de teste monta UI/composição/repositórios FlutterFire reais, sem fakes, com guardas para demo-bolsozen/Auth 127.0.0.1:9099/Firestore 127.0.0.1:8080 antes de usar os clientes. Runner desabilitado por padrão; origem fixa http://localhost:7366. Não altera o app normal para apontar a emuladores nem importa suas opções de produção.
+
+**Três verificações confirmadas:** área pública sem Perfil, bootstrap até UI pública e validação de cadastro vazio. O runner submeteu cadastro com dados exclusivamente locais, mas o resultado definitivo de conta/perfil não foi comprovado antes da interrupção. O Firestore Emulator encerrou por **memória nativa insuficiente do Java**, malloc de 858256 bytes; automação terminou em UI_EXPECTATION_TIMEOUT, exit 1. Emuladores/Chrome/Flutter próprios encerrados e nenhuma operação pesada repetida após OOM. Dados efêmeros não exportados; nenhuma mutação remota.
+
+O log bruto relatou 4 aprovações. A inspeção das imagens invalidou a quarta: o nome digitado no formulário foi aceito como perfil por uma asserção fraca; a captura ainda mostrava cadastro em loading. Correção exige Perfil, Sair, nome/e-mail correspondentes e ausência de formulários públicos. **6 testes Node puros aprovados** para impedir o falso positivo; a bateria UI corrigida não foi reexecutada. Não contar nome no formulário ou timeout de rede como sucesso de persistência/segurança.
+
+[Revisão autoritativa](evidencias/m4-6/web/validation-review.json) preserva o resultado bruto e a reclassificação. A imagem originalmente chamada web-perfil-local.png foi arquivada como cadastro-em-envio-inconclusivo.png, sem apresentá-la como perfil. Frame Web inicial ainda sem imagens decodificadas não é homologação visual ou prova de regressão de assets. Evidências anteriores aprovadas/Safari permanecem preservadas.
+
+Reload mantendo sessão, logout/histórico Chrome, login correto/incorreto, recuperação, troca de UID, cadastro parcial e rede não foram concluídos nesta bateria UI. Os 19 checks SDK M4.5 e 77 testes de regras M3 permanecem **históricos, não repetidos nesta etapa**; após OOM não foi iniciado outro emulador.
+
+### Qualidade e depreciações
+
+| Comando | Resultado M4.6 |
+|---|---|
+| dart format . | 68 arquivos, execução final 0 alterações; exit 0 |
+| flutter analyze | 0 erros/warnings; **20 informes deprecated_member_use**, exit 1 |
+| flutter test --concurrency=1 | **301 aprovados, 0 falhas**, exit 0 |
+| git diff --check | Aprovado, somente avisos locais LF/CRLF |
+| node --test firebase/tests/m4_ui_assertions.test.cjs | **6 aprovados**, 0 falhas; testes puros da automação |
+
+Na entrada havia 22 informes: 10 preexistentes no M3 e 12 líquidos do M4. Corrigidos dois imports seguros: main.dart usa widgets.dart; app_colors.dart usa dart:ui. Sem mudança de símbolo, tema ou dependência. Restam **8 preexistentes + 12 do M4**; lista detalhada no relatório. Os demais exigem migração Material/Cupertino/dependências fora do escopo; não foram ocultados.
+
+301 testes preservados, sem novos testes Flutter M4.6. Incluem perfil parcial, concorrência, UID, neutralidade, erros, logout/navegação e responsividade 360/390/412 dp com texto 1/2 e teclado simulado. Não equivalem a execução Android privada, reinício autenticado, teclado nativo ou TalkBack.
+
+### Arquivos, segurança e próxima tarefa
+
+- Produção: somente imports de `lib/main.dart` e `lib/core/theme/app_colors.dart` alterados neste M4.6. Telas e identidade visual aprovadas preservadas.
+- Criados `integration_test/m4_ui_local_app.dart`, `firebase/tests/run_m4_ui_local.cjs`, `m4_ui_assertions.cjs`, `m4_ui_assertions.test.cjs` e `test/visual/m4_android_public.py`, exclusivos de homologação.
+- Documentação: `docs/M4_HOMOLOGACAO.md`, `docs/PLANO_M4.md`, este progresso e evidências sanitizadas em `docs/evidencias/m4-6/`.
+- Memória Gradle/paralelismo, opções Firebase, projeto, regras/índices e dependências intactos. JAVA_TOOL_OPTIONS=-Xmx384m limitado ao processo local do emulador. Nenhum cache apagado, deploy, commit, staging ou push; JSON redundante continua intacto e não rastreado.
+- Logs/dumps permanecem locais/ignorados: build/m4-6-*, firestore-debug.log, hs_err_pid19820.log, replay_pid19820.log. Não incluir dumps Java, senhas, tokens ou perfil Chrome no Git. A interrupção posterior do servidor não repetiu operações já executadas.
+
+Próxima tarefa: usuário revisar relatório e escolher como completar as pendências. Retomada Chrome exige avaliação de memória e aprovação de tentativa com runner corrigido; sem repetição automática após OOM. Android autenticado pode ser validado manualmente pelo usuário, sem credenciais no chat, ou por roteiro remoto específico previamente aprovado (proposta no relatório, ainda não executada). Teclado virtual/acessibilidade nativos pendentes. M4 não encerrado automaticamente; não iniciar M5.
+
+## M4.5 — Cadastro e conclusão de perfil implementados e validados localmente
+
+M4.4 foi **revisado visualmente e aprovado pelo usuário**: onboarding, login e recuperação satisfatórios e fiéis ao protótipo. Esse aceite substitui a pendência de revisão visual do registro histórico M4.4, sem inventar validações Android que não foram executadas. M4.5 expressamente autorizado e entregue para revisão; **M4.6 não autorizado**. Perfil mínimo real permanece o destino privado aprovado até M5.
+
+### Arquivos desta etapa
+
+Criados:
+
+- `lib/presentation/screens/auth/register_screen.dart`: TEL-03, nome/e-mail/senha/confirmação, validação do domínio, foco no primeiro inválido, senhas com visibilidade independente, loading e mensagens pt-BR.
+- `lib/presentation/screens/auth/complete_profile_screen.dart`: somente para ausência confirmada, nome e e-mail real somente leitura, salvar perfil e sair, sem senha ou novo cadastro.
+- `test/presentation/register_screens_test.dart`: 32 novos testes; 20 funcionais e 12 responsivos.
+- `docs/M4_5_VALIDACAO_VISUAL.md` e `docs/evidencias/m4-5/`: seis screenshots reais e manifesto de captura local.
+
+Alterados:
+
+- `lib/app/auth_experience.dart`: callbacks reais de Entrar/Criar conta e uma única rota pública que alterna Login/Cadastro sem empilhá-los; ausência confirmada usa Completar perfil.
+- `lib/presentation/screens/welcome/welcome_screen.dart`: somente callback de Criar conta; layout, logo, ilustrações/carrossel preservados.
+- `lib/presentation/screens/auth/login_screen.dart`: callback do botão Criar conta, sem redesenhar a tela.
+- `lib/presentation/widgets/password_field.dart`: rótulo, autofill de senha nova e ação de teclado configuráveis; padrões do login preservados.
+- `lib/presentation/controllers/session_controller.dart`: expõe canSignOut e hasPendingProfileCreation para os estados reais da UI; reutiliza coordenação de cadastro/perfil já testada, sem duplicar o adaptador Firebase.
+- `lib/presentation/screens/auth/session_status_screen.dart`: saída durante carregamento quando permitida, mensagem de cadastro parcial e ação Tentar salvar perfil novamente, sem segundo cadastro.
+- `test/presentation/auth_screens_test.dart` e `test/widget_test.dart`: expectativas provisórias de indisponibilidade substituídas por navegação/formulário agora autorizados; cobertura anterior preservada.
+- `integration_test/m4_auth_emulator.dart`: sete verificações adicionais usando SessionController e repositórios reais, com as mesmas barreiras de projeto demo/endpoints locais.
+- `test/visual/m4_auth_preview.dart` e `test/visual/capture_m4_auth.cjs`: cenário local de cadastro/ausência de perfil e modo --m4-5 de seis capturas em uma página, sem recargas sucessivas.
+- `docs/PLANO_M4.md` e este progresso: aprovação M4.4, entrega, resultados e limites M4.5.
+
+Removido o componente provisório `lib/presentation/widgets/registration_availability.dart`, sem uso após as duas entradas reais de cadastro. Alterações preexistentes M4.1–M4.4 foram preservadas. Nesta etapa não foram alterados domínio, adaptadores/repositórios de dados, SessionGate, tema global, main/bootstrap, FirebaseOptions, regras, índices, Gradle ou dependências.
+
+### Fluxo e segurança
+
+Todos os campos são validados antes de signUp. Senha/confirmação chegam intactas, sem trim, corte, normalização ou log; somente nome e e-mail seguem as regras existentes. Cadastro bloqueia toque/submit duplicados e mantém campos em falhas do provedor, incluindo e-mail já utilizado e rede.
+
+SessionController continua sendo a fonte da transição, sem push privado no retorno isolado do SDK. Aguarda identidade autenticada correspondente, ensureProfile idempotente e leitura confirmada antes do Perfil mínimo. Nome é vinculado ao UID esperado; perfil existente não é substituído. createdAt permanece preservado. Conta criada com falha no perfil deixa sessão explícita e permite retry somente da gravação/leitura do perfil, sem recadastrar nem rollback da conta.
+
+Perfil ausente após entrada/restauração solicita somente nome; não deriva nome do e-mail. E-mail vem da sessão, somente leitura. Perfil inválido ou permission-denied mantém tela de erro recuperável, sem converter falha em ausência. Logout pode ser solicitado durante conclusão/gravação de perfil; respostas antigas são descartadas após saída/troca de UID/dispose. Isso não promete cancelar uma gravação já enviada ao SDK; eventual confirmação tardia não reabre a árvore privada.
+
+Login/Cadastro compartilham uma rota sobre as boas-vindas: alternar substitui e descarta o formulário anterior, sem acumular pilhas ou senhas. Voltar retorna às boas-vindas. SessionGate destrói a árvore pública no sucesso confirmado e a privada no logout/troca de UID. Recuperação e Perfil mínimo aprovados permanecem disponíveis; Dashboard e M4.6 não implementados.
+
+### Qualidade — sequência final
+
+| Comando | Resultado |
+|---|---|
+| `dart format .` | 67 arquivos; execução final 0 alterações; exit 0 |
+| `flutter analyze` | **0 erros, 0 warnings, 22 informes deprecated_member_use**; exit 1 pelos informes |
+| `flutter test --concurrency=1` | **301 aprovados, 0 falhas**: 269 anteriores + 32 novos; exit 0 |
+| `git diff --check` | Aprovado; avisos locais LF/CRLF sem erros de whitespace |
+
+Os informes Material/Cupertino do SDK não foram ocultados nem substituídos por pacotes novos. Eram 20 no M4.4; três imports novos (duas telas e teste) e remoção do componente antigo resultam em 22. Lint novo de bloco if e uso incorreto de getter somente no teste foram corrigidos antes da sequência final.
+
+A primeira suíte teve 295 aprovações e seis falhas em testes antigos de layout que esperavam AlertDialog de Criar conta. O comportamento foi substituído pelo cadastro real autorizado; testes passaram a verificar callback e preservaram as seis combinações de largura/texto. Após ajuste e alterações finais no runner local, a sequência foi repetida e terminou com 301 aprovados. A tentativa inicial de analyzer no sandbox não produziu saída e foi interrompida; as validações finais utilizaram acesso ao SDK fora do sandbox, sem build simultâneo.
+
+Cobertura nova: nome vazio/inválido, e-mail inválido, senha curta, confirmação diferente, e-mail utilizado, rede, valores preservados, autofill/visibilidade independente, duplicidade por teclado/toque, auth antes/depois do retorno SDK, espera do perfil, cadastro parcial com retry sem conta duplicada, idempotência e leitura após gravação, sessão sem perfil em montagem nova, erro/permissão sem sobrescrita, saída durante escrita, UID/respostas antigas e alternância de navegação. Os 12 novos casos responsivos cobrem Cadastro/Completar perfil em 360/390/412 dp, texto 1/2, altura 640 e teclado simulado 300 dp.
+
+### Integração FlutterFire exclusivamente local
+
+Executado o runner Dart real no Chrome, com **19 verificações aprovadas**, 12 anteriores e 7 novas M4.5. Projeto **demo-bolsozen**; Auth **127.0.0.1:9099** e Firestore **127.0.0.1:8080**, ambos conectados antes de AppDependencies ou qualquer operação. O runner não importa main.dart/firebase_options.dart e exige as flags de habilitação/projeto/endpoints; supervisor permanece desabilitado por padrão. Não utiliza Firebase Admin ou bypass de regras para operações do aplicativo.
+
+```powershell
+$env:JAVA_TOOL_OPTIONS='-Xmx384m'
+firebase emulators:exec --project demo-bolsozen --only auth,firestore "node firebase/tests/run_m4_auth_emulator.cjs --execute-local"
+```
+
+JAVA_TOOL_OPTIONS foi definido apenas no processo dessa execução, para limitar o emulador Java; Gradle e ambiente persistente não foram alterados. Somente uma compilação por vez; Chrome visual anterior já encerrado.
+
+SDKs reais confirmaram cadastro/e-mail normalizado/stream, perfil lido do servidor, idempotência, e-mail duplicado tipado, login com espaços na senha preservados, credencial inválida neutra, reset de e-mail inexistente no emulador e logout. Os sete novos checks confirmaram cadastro pelo controller com UID/perfil correspondente, preservação de nome e createdAt ao garantir perfil existente com outro nome, limpeza no logout, conta autenticada sem perfil detectada como ausente, validação de nome na conclusão, perfil salvo e relido sem segunda conta e logout final.
+
+Resultado success=true, checksPassed=19, runnerExited code=0, emulators:exec exit=0. Instâncias descartadas/sessão encerrada e Auth/Firestore locais desligados normalmente; dados efêmeros não foram exportados. Nenhuma conta ou documento de bolsozen-f2f35 foi criado, consultado ou modificado pelo runner. A/B/C e perfis retidos permanecem intocados. Não foi repetida a bateria de 77 regras, pois regras/índices não mudaram.
+
+### Evidências visuais, limites e próxima tarefa
+
+[Validação visual M4.5](M4_5_VALIDACAO_VISUAL.md): seis screenshots reais Flutter/Chrome, cadastro TEL-03 e Completar perfil em 360/390/412 dp, inspecionadas e arquivadas com manifesto em `docs/evidencias/m4-5/`. Preview exclusivo de teste, fakes e banner TESTE VISUAL; essas imagens não comprovam backend. Captura concluída sem runtimeErrors ou OOM, uma compilação/página, Chrome temporário encerrado. Termos/Privacidade omitidos conforme requisitos por ausência de textos reais; campos vazios, cinza e botão sólido seguem os tokens/componentes M4.4. Não declarar pixel-perfect ou aprovação do M4.5 pelo usuário.
+
+Logs locais ignorados: `build/m4-5-analyze.log`, `build/m4-5-tests.log`, `build/m4-5-emulator.log`, `build/m4-5-visual-run.log`. Nenhum cache foi apagado. Não houve build Android, operação Firebase remota, e-mail real, alteração de contas existentes, deploy, staging, commit ou push. JSON redundante permanece intacto e não rastreado.
+
+Pendências: revisão funcional/visual do M4.5 pelo usuário; Android/teclado nativo/TalkBack, reinício real do processo e persistência do navegador, confirmação manual de recuperação e eventual roteiro remoto pertencem à homologação M4.6, que **exige nova autorização**. Perfil ausente foi simulado em nova montagem e exercitado com SDK real no emulador, sem comprovar reinício Android. Falhas parciais/rede/corridas são determinísticas nos fakes; não se afirma que houve interrupção real de rede durante commit. M4 não está encerrado e M4.6 não foi iniciado.
+
+## M4.4 — Login, recuperação e perfil mínimo implementados; revisão visual pendente
+
+M4.3 revisado e aprovado pelo usuário. M4.4 autorizado exclusivamente e entregue para revisão. M4.5 e posteriores não autorizados. Os registros abaixo das etapas anteriores são históricos; a ativação do gate que estava adiada no M4.3 foi realizada nesta etapa.
+
+### Entrega e arquivos
+
+- Criados `lib/app/auth_experience.dart`, `lib/presentation/screens/auth/login_screen.dart`, `password_reset_screen.dart`, `session_status_screen.dart` e `lib/presentation/screens/profile/profile_screen.dart`.
+- Criados componentes em `lib/presentation/widgets/`: `auth_form_layout.dart`, `password_field.dart`, `submit_button.dart` e `registration_availability.dart`.
+- Alterados `lib/main.dart`, `lib/app/app_dependencies.dart`, `lib/app/session_gate.dart`, `lib/presentation/controllers/session_controller.dart`, `lib/core/theme/app_theme.dart` e `lib/presentation/screens/welcome/welcome_screen.dart`.
+- Criados `test/presentation/auth_screens_test.dart`, `test/visual/m4_auth_preview.dart` e `test/visual/capture_m4_auth.cjs`; atualizados `test/presentation/session_controller_test.dart`, `session_fakes.dart` e `test/widget_test.dart`.
+- Documentação: `docs/PLANO_M4.md`, este progresso, `docs/M4_4_VALIDACAO_VISUAL.md` e dez capturas com manifesto em `docs/evidencias/m4-4/`.
+
+Login real com validação, visibilidade de senha, loading, bloqueio de envios duplicados e mensagens neutras. Recuperação usa o contrato existente, sem consultar existência de conta; confirmação neutra, falha de rede explícita e proteção contra reentrada. Perfil mostra nome real do Firestore e e-mail da sessão, inicial do nome e logout com tratamento de falhas. Nenhuma senha é persistida pelo aplicativo ou registrada em logs.
+
+`FirebaseStartup` continua responsável pela inicialização única; sua composição monta `AppDependencies` e o `SessionGate` com destinos reais. A área pública mantém o formulário durante autenticação e erros; após identidade confirmada, o gate aguarda perfil válido antes de abrir a área privada. Logout/troca de UID destrói a árvore anterior. Falha de perfil tem retry seguro; perfil ausente informa a situação e permite sair, sem criação automática ou antecipação de Completar perfil. Criar conta permanece uma mensagem de indisponibilidade, sem rota falsa. Logo, imagens, carrossel e composição das boas-vindas preservados.
+
+O controller coordena também a recuperação de senha, descarta respostas antigas após mudança de identidade/dispose e bloqueia operações concorrentes. O tema reaproveita os tokens existentes; formulários usam densidade padrão e botões de 48 dp também no desktop, sem alterar a densidade das boas-vindas. Não foram adicionadas dependências ou alterados Firebase, regras, índices, Gradle ou repositórios financeiros.
+
+### Validações executadas sequencialmente
+
+| Comando | Resultado final |
+|---|---|
+| `dart format .` | 65 arquivos; última execução formatou 3; exit 0 |
+| `flutter analyze` | 0 erros, 0 warnings, **20 informes deprecated_member_use**; exit 1 pelos informes |
+| `flutter test --concurrency=1` | **269 aprovados**, 0 falhas; exit 0 |
+| `git diff --check` | Aprovado; avisos locais LF/CRLF, sem erros de whitespace |
+
+São 228 testes anteriores e 41 novos: 36 de widgets (18 funcionais e 18 responsivos) e 5 do controller. A expectativa antiga de indisponibilidade de Entrar foi atualizada para validar seu callback real. Cobertura inclui formulários vazios/inválidos, senha visível, mensagens neutras, rede, duplicidade por toque/teclado, recuperação, perfil correspondente, erro/ausência de perfil, retry, logout falho/confirmado, mudança de UID e proteção de navegação. Responsividade automatizada: 360/390/412 dp, altura 640, escalas de texto 1 e 2; login/recuperação incluem foco e inset de teclado de 300 dp.
+
+Os 20 informes são de imports oficiais Material marcados como deprecated pelo SDK instalado: 10 preexistentes e 10 nos novos arquivos. Não foram ocultados, nem adicionada a dependência material_ui. Logs locais ignorados: `build/m4-4-analyze.log` e `build/m4-4-tests.log`.
+
+### Evidências visuais e limitação de memória
+
+Comparação documentada em [Validação visual M4.4](M4_4_VALIDACAO_VISUAL.md). Dez screenshots reais do renderer Flutter/Chrome foram capturadas e inspecionadas: login, recuperação e perfil nas três larguras, mais confirmação neutra em 390 dp. Estão em `docs/evidencias/m4-4/`, com dimensões e hashes no manifesto. O preview é exclusivo de teste, usa fakes locais identificados por TESTE VISUAL e não inicializa Firebase; nome/e-mail nas imagens são fixtures, não dados reais.
+
+Corrigidos sublinhado dos links, altura dos botões no Chrome, tratamento tipográfico do rodapé e preservação do formulário durante login. Campos seguem o fundo cinza do Design System; recuperação/perfil seguem as telas complementares documentadas. Não se declara fidelidade pixel-perfect ou aprovação visual pelo usuário.
+
+A primeira captura teve erro de métricas ao simular viewport mobile no CDP; a ferramenta foi corrigida para viewport CSS. Na execução final, **após as dez capturas**, o processo Dart das ferramentas Flutter encerrou com `Out of memory` durante capturas adicionais. Log preservado em `build/m4-4-visual-final-run.log`; a automação terminou com timeout CDP. Chrome temporário encerrado; nenhuma compilação foi repetida após o OOM. O script foi depois limitado a dez capturas por padrão, com manifesto incremental e modo `--extended` opcional; somente sua sintaxe Node foi verificada após essa alteração, sem nova execução visual.
+
+As capturas adicionais com texto ampliado/teclado e estados de perfil ausente/erro não foram concluídas no Chrome. Esses comportamentos têm cobertura automatizada, mas isso não substitui homologação visual. Android, teclado nativo, TalkBack, persistência real de sessão entre reinícios e envio efetivo de e-mail não foram validados nesta etapa. Não houve build Android, teste remoto, conta criada, uso das contas A/B/C, alteração de dados, deploy, staging, commit ou push.
+
+### Próxima tarefa e pendências
+
+- Usuário revisar implementação e capturas; homologação visual integral permanece pendente.
+- Validar visualmente Android e teclado/acessibilidade nativos em execução futura autorizada; avaliar recursos antes de repetir compilação após OOM.
+- Se necessário, completar capturas ampliadas/teclado em sessão visual com menor consumo, sem repetir automaticamente a compilação.
+- M4.5 (cadastro e Completar perfil) depende de nova autorização. Não iniciar automaticamente.
+
+## M4.3 — SessionController e SessionGate implementados e testados
+
+M4.2 revisado e aprovado pelo usuário. Implementação exclusiva do M4.3 autorizada e entregue para revisão. M4.4 e posteriores NÃO autorizados; destino privado futuro continua sendo Perfil mínimo real durante M4, Dashboard somente no M5.
+
+Arquivos criados nesta etapa:
+
+- `lib/presentation/controllers/session_controller.dart`: ChangeNotifier com sessão derivada do stream AuthRepository, carregamento/validação do perfil e coordenação de autenticação, criação idempotente e logout. Sem credenciais armazenadas em campos, objetos Firebase ou logs.
+- `lib/app/session_gate.dart`: ListenableBuilder e Navigator interno com identidade da árvore por versão da sessão e área. Destinos injetados obrigatórios, sem telas técnicas/provisórias embutidas em produção. Gate cria/inicia uma vez e descarta o controller de sua propriedade.
+- `test/presentation/session_controller_test.dart`: 30 testes com fakes controlados.
+- `test/presentation/session_gate_test.dart`: 11 testes de widgets e navegação, incluindo bootstrap.
+- `test/presentation/session_fakes.dart`: fakes exclusivamente de teste, com Futures/streams controlados e destinos técnicos somente nos testes.
+
+Arquivos modificados nesta etapa:
+
+- `lib/app/app_dependencies.dart`: factory createSessionController retorna controller ainda não iniciado, com os contratos já compostos.
+- `lib/app/firebase_startup.dart`: childBuilder opcional, mutuamente exclusivo com child; permite construir gate/composição somente após inicialização confirmada, preservando a API anterior.
+- `lib/domain/repositories/user_repository.dart` e `lib/data/repositories/firestore_user_repository.dart`: argumento opcional expectedUserId em fetch/ensureProfile, usado apenas para conferir sessão antes do acesso. O UID do caminho continua sendo obtido de FirebaseSession, nunca do argumento. Mantidas transação, idempotência, timestamps e verificações M3 após operações assíncronas. A barreira evita aplicar o nome do cadastro A ao usuário B se o SDK trocar a sessão antes de seu evento chegar ao controller.
+- `test/data/repository_session_test.dart`: novo teste comprova rejeição de UID esperado divergente antes de qualquer leitura/escrita Firestore.
+- `test/data/app_dependencies_test.dart`: cobertura da factory sem assinatura/consulta antecipada.
+- `docs/PROGRESSO.md` e `docs/PLANO_M4.md`: decisões, resultados e limites desta etapa.
+
+Não alterados: main.dart, welcome_screen.dart, logo/carrossel, telas finais, regras/índices, configuração Firebase, Gradle, dependências e repositórios financeiros. Alterações não registradas das etapas anteriores foram preservadas. Nenhum staging ou commit; JSON redundante permanece intacto e não rastreado.
+
+### Estados e concorrência
+
+SessionPhase: checking (primeiro evento pendente), public, authenticating, loadingProfile, missingProfile, profileError, ready e sessionError (falha do stream). Logout é operação ocupada sobre o estado confirmado, sem apagar perfil antecipadamente ou fingir saída quando o provedor falha. isReady requer UID correspondente e perfil confirmado. Perfil com UID/e-mail incompatível é invalidData; ausência real é missingProfile, não erro ou perfil fabricado.
+
+Versões de identidade e de requisição invalidam resultados após logout, troca de UID, ciclo A -> B -> A e dispose. Mudança de identidade limpa imediatamente o perfil anterior. Assinaturas são canceladas ao descartar o controller; start e retry de sessão não multiplicam listeners. Erros são AuthFailure/DataFailure seguros; não há FirebaseException exposta à apresentação.
+
+Bloqueio de operações evita login/cadastro/logout/retry duplicados. Password e confirmação são apenas parâmetros locais, nunca campos. Não há Future.timeout ou inferência de cancelamento de cadastro. Retorno de login/cadastro não libera acesso sem evento de autenticação e perfil correspondente. Se o evento chegar antes do retorno do cadastro, o nome ainda não é usado; após confirmação de UID, ensureProfile e fetch são coordenados. Se outra conta entrar, o nome antigo não é utilizado nessa nova conta.
+
+retryProfile não repete login/cadastro. Quando uma criação explicitamente solicitada falha parcialmente, o controller mantém somente nome/UID para retry idempotente; login normal não cria ou sobrescreve perfil. completeProfile só é aceito em estado de perfil realmente ausente, com nome válido e expectedUserId vinculado. Perfil malformado/permission-denied permanece erro recuperável, sem sobrescrita automática.
+
+### Navegação e integração mínima
+
+O gate só chama readyBuilder com perfil válido. checking/authenticating/loadingProfile usam loadingBuilder; público, ausência e erro têm builders separados. Cada identidade/área recebe Navigator próprio; logout confirmado, troca de UID ou erro de sessão remove toda a árvore privada, inclusive rotas empilhadas. O contexto fornecido aos builders pertence ao Navigator interno. NavigatorPopHandler encaminha Voltar à pilha vigente; não mantém rotas da conta anterior.
+
+Integração preparada e comprovada com fakes: FirebaseStartup.childBuilder só monta o gate após o Future de inicialização completar, e AppDependencies.createSessionController não inicia consultas antes de o gate assumir seu ciclo de vida. Não ocorre segunda inicialização Firebase.
+
+**Ativação em produção deliberadamente adiada:** main.dart continua mostrando a boas-vindas existente. Montar SessionGate ali agora exigiria telas privadas, de perfil ausente e de erro ainda não fornecidas no escopo visual autorizado. Nenhum builder técnico de teste foi instalado no app real. Na etapa posterior autorizada, conectar o gate com destinos reais e manter rotas privadas dentro de seu Navigator; não empilhá-las no Navigator externo/rootNavigator. A proteção foi validada nos testes, não declarada como fluxo de login já acessível em produção.
+
+### Validação local e resultados
+
+| Comando, na sequência exigida | Resultado final |
+|---|---|
+| `dart format .` | 54 arquivos; primeira execução formatou 10, final 0 alterações; exit 0 |
+| `flutter analyze` | Sem erros/warnings; 10 informes preexistentes deprecated_member_use; exit 1 pelos informes |
+| `flutter test --concurrency=1` | **228 aprovados**, 0 falhas: 186 anteriores + 42 novos; exit 0 |
+| `git diff --check` | Aprovado; avisos locais LF/CRLF, sem erro de whitespace |
+
+Cobertura nova: primeiro evento atrasado, sessão pública, perfil válido/ausente/UID ou e-mail incompatível/malformado, rede/permission-denied/sessionChanged, retry sem autenticar de novo, logout confirmado/pendente/falho, troca de conta e respostas antigas, dispose e cancelamento, evento repetido, evento auth antes/depois de retorno SDK, criação parcial com retry, nome vinculado ao UID esperado e não sobrescrita de perfil inválido. Widgets comprovam espera do perfil, erro sem conteúdo privado, destruição efetiva da árvore/pilha, Voltar após logout, troca A/B, preservação da pilha válida em falha de logout, bootstrap e ownership/dispose.
+
+A primeira suíte ficou parada no teste de navegação que cancela e refaz a assinatura. Diagnóstico isolado confirmou necessidade de tester.runAsync para essa operação fora do relógio simulado do widget; checkpoints temporários foram removidos. Somente processos identificados dessas execuções locais interrompidas foram encerrados; logs preservados. Após correção exclusivamente no teste, o teste isolado passou e a sequência completa foi repetida, encerrando com 228 aprovados. Lints novos de construtor/braces e import não usado foram corrigidos antes do resultado final; não há novos informes.
+
+Evidências locais ignoradas: `build/m4-3-analyze.log`, `build/m4-3-tests.log`, `build/m4-3-tests-interrupted.log` e logs m4-3-gate-* de diagnóstico. Nenhuma operação ou teste remoto, emulador Firebase, build Android/Web, instalação, exclusão, deploy, commit ou push nesta etapa. A/B/C e perfis A/C permanecem preservados.
+
+Limitações: fakes validam coordenação/navegação, não conectividade, reinício do processo, expiração real de token ou histórico real do navegador. As garantias de acesso ao servidor continuam nas regras M3; o gate não substitui Security Rules. A assinatura de expectedUserId foi testada localmente antes de acessar Firestore; sua integração com SDK real deverá entrar na homologação local futura, sem nova operação remota automática. Não houve alteração visual em produção para comparar por screenshot.
+
+Próxima tarefa: usuário revisar M4.3 e autorizar separadamente M4.4. Somente então implementar telas reais de login/recuperação/perfil e ligar os destinos prontos; cadastro/completar perfil visual seguem M4.5. Não avançar automaticamente nem conectar a UI a fluxos incompletos.
+
+## M4.2 — Adaptador Firebase Authentication implementado e validado localmente
+
+M4.1 revisado e aprovado pelo usuário. M4.2 expressamente autorizado e entregue; aguarda revisão. M4.3 e posteriores NÃO autorizados. Perfil mínimo real continua aprovado como destino futuro durante M4, sem qualquer ligação às telas nesta etapa.
+
+Arquivos criados nesta etapa:
+
+- `lib/data/repositories/firebase_auth_repository.dart`: implementação integral de AuthRepository, FirebaseAuth injetado, conversão para AuthUser e configuração da persistência Web.
+- `lib/data/firebase/auth_error_mapper.dart`: tradução sanitizada por AuthOperation para AuthFailure, sem expor FirebaseException, UserCredential ou mensagens brutas à apresentação.
+- `lib/app/app_dependencies.dart`: composição assíncrona dos contratos de autenticação, perfil, transações e orçamento, com FirebaseSession compartilhado entre os repositórios Firestore. Reutiliza as instâncias recebidas, rejeita apps/projetos incompatíveis, não chama initializeApp e não acessa documentos durante a composição.
+- `test/data/auth_error_mapper_test.dart`, `test/data/firebase_auth_repository_test.dart`, `test/data/app_dependencies_test.dart`: 59 novos testes, usando fakes.
+- `test/data/auth_test_fakes.dart`: fakes mínimos do SDK, restritos aos testes.
+- `integration_test/m4_auth_emulator.dart`: entrypoint Dart de integração no Chrome, desabilitado por padrão, somente demo-bolsozen e hosts locais explícitos; não importa main.dart nem firebase_options.dart.
+- `firebase/tests/run_m4_auth_emulator.cjs`: supervisor Node sem dependências adicionais, bloqueado por padrão, exige variáveis de ambiente dos dois emuladores e projeto demo antes de iniciar Flutter. Captura somente eventos sanitizados, encerra o Chrome temporário após resultado e deixa emulators:exec desligar os serviços.
+
+Documentos atualizados: `docs/PROGRESSO.md` e `docs/PLANO_M4.md`. Nenhuma alteração em main.dart, FirebaseStartup, BolsoZenApp, welcome_screen.dart, navegação, modelos/validadores do M4.1, repositórios financeiros, dependências, firebase_options.dart, Firebase remoto, regras, índices, Gradle ou JSON redundante. AppDependencies ainda não foi conectado à aplicação: essa ligação e SessionController/SessionGate pertencem ao M4.3.
+
+### Contrato e comportamento
+
+- authStateChanges emite o estado inicial do SDK, inclusive null; usuário válido vira somente AuthUser. E-mail ausente/inválido, UID vazio ou credencial sem usuário produzem AuthFailure.unknown; não simulam sessão pública/sucesso. Erros de stream são tipados e eventos posteriores continuam sendo recebidos; cancelamento é propagado à origem.
+- signIn normaliza somente o e-mail e reaplica validação de login; signUp reaplica a regra de cadastro. Senhas chegam intactas ao SDK, inclusive espaços, acentos e Unicode, sem armazenamento próprio ou logs. Sem retentativas automáticas de chamadas de autenticação.
+- Login neutraliza invalid-credential, invalid-login-credentials, wrong-password e user-not-found. Cadastro existente, senha fraca, formato inválido, limitação de requisições, rede, serviço/configuração, conta desabilitada e token inválido têm tradução apropriada. Erro desconhecido permanece falha segura.
+- sendPasswordReset configura pt-BR antes do envio, sem consultar existência de e-mail. user-not-found e user-disabled durante o envio têm a mesma conclusão pública neutra do sucesso; esta é uma proteção contra enumeração por condição de conta. Falha ao configurar idioma, falhas operacionais/rede/limite e códigos desconhecidos continuam sendo erros; não são tratados como sucesso. O contrato void usa a confirmação neutra já definida em AuthFailure para a futura UI.
+- signOut aguarda o provedor e propaga falha tipada; não anuncia logout por conta própria.
+
+### Persistência verificada nas APIs instaladas
+
+firebase_auth 7.1.0 expõe setPersistence(Persistence.LOCAL), e firebase_auth_web 6.4.0 o delega ao SDK Web. FirebaseAuthRepository.initialize configura LOCAL somente em Web, uma vez por instância, e aguarda configuração antes das operações/stream. Chamadas concorrentes compartilham o Future. Falha bloqueia o uso, sem fallback silencioso ou retry automático; uma tentativa explícita futura de recomposição pode criar outra instância do repositório. Android não chama setPersistence e utiliza persistência nativa. Nenhuma flag isLoggedIn, preferências ou storage próprio de tokens.
+
+### Testes e resultados reais
+
+Comandos obrigatórios executados sequencialmente antes da integração:
+
+| Verificação | Resultado |
+|---|---|
+| `dart format .` | 49 arquivos; primeira execução formatou 8 novos, última 0 alterações; exit 0 |
+| `flutter analyze` | 0 erros, 0 warnings, 10 informes preexistentes deprecated_member_use; exit 1 pelos informes |
+| `flutter test --concurrency=1` | 186 testes aprovados, 0 falhas: 127 anteriores + 59 novos; exit 0 |
+| `git diff --check` | Aprovado; aviso local LF/CRLF em pubspec.lock sem diff de conteúdo/dependências |
+
+A análise inicial identificou await em useFirestoreEmulator (API síncrona na versão instalada) e um lint de construtor; ambos corrigidos antes dos testes. O teste existente de FirebaseStartup imprime StateError intencional de falha/retry; não representa acesso ou falha remota.
+
+Cobertura dos testes novos: normalização de e-mail, preservação de senha curta no login e espaços/Unicode no cadastro, validação antes da chamada SDK, credencial/usuário/e-mail nulos ou inválidos, mensagens por operação sem detalhes sensíveis, stream inicial/erros/eventos posteriores/cancelamento, confirmação neutra de recuperação, idioma pt-BR, falha de idioma, rede em cada operação sem retry, logout com espera/sucesso/falha, persistência LOCAL Web única/aguardada/erro sem fallback, Android sem chamada exclusiva Web e composição sem leituras/autenticação ou inicialização duplicada.
+
+### Integração exclusivamente nos emuladores locais
+
+Portas 9099/8080 estavam livres antes da execução; os emuladores foram iniciados pelo comando abaixo, sem reutilizar um ambiente existente. Firebase CLI confirmou demo-bolsozen e bloqueio de serviços não emulados desse projeto.
+
+```powershell
+firebase emulators:exec --project demo-bolsozen --only auth,firestore "node firebase/tests/run_m4_auth_emulator.cjs --execute-local"
+```
+
+Resultado: **12 verificações aprovadas**, runner Dart/Flutter real no Chrome, exit 0. Não é uma repetição da bateria JavaScript M3: Node apenas supervisiona o processo Flutter. Antes de criar conta local, runner configurou FirebaseAuth.useAuthEmulator(127.0.0.1,9099) e Firestore.useFirestoreEmulator(127.0.0.1,8080), confirmou demo-bolsozen e registrou os endpoints. Usa FirebaseOptions fictícias do projeto demo, sem opções de bolsozen-f2f35 e sem fallback para o remoto.
+
+Verificados: configuração local, sessão inicial nula, cadastro com normalização, evento autenticado, perfil real pelo FirestoreUserRepository e releitura do servidor, idempotência/auditoria, cadastro duplicado com erro tipado, logout com evento nulo, login preservando espaços e mesmo UID, senha modificada negada com mensagem neutra, recuperação de endereço inexistente com conclusão neutra e logout final. Recuperação existente/entrega de e-mail não foi exercitada: endereço ausente evita gerar códigos/links de redefinição nos logs. Recebimento de e-mail e persistência entre reinícios continuam na homologação futura.
+
+Conta e perfil pertenciam somente ao emulador efêmero; sessão encerrada e instâncias locais descartadas. Emulators:exec encerrou Auth/Firestore e Chrome temporário foi encerrado com saída 0. Não houve exclusão ou alteração de contas/perfis existentes remotos nem contato de dados com bolsozen-f2f35. Não foram repetidos os testes remotos M3 ou a bateria de 77 regras locais; regras permaneceram inalteradas, sendo utilizadas no teste de perfil local.
+
+Evidências locais ignoradas: `build/m4-2-analyze.log`, `build/m4-2-tests.log`, `build/m4-2-emulator.log`; supervisor Node passou node --check e, sem flag, informou desabilitado sem iniciar Flutter/rede.
+
+### Limitações e pendências para M4.3
+
+Nenhum build Android pesado foi realizado. Persistência nativa foi respeitada por configuração/testes com fake; não há nova evidência de reinício de sessão Android nesta etapa. A integração Chrome comprova SDK real no emulador, não autenticação no projeto remoto, entrega de e-mail ou persistência após fechar/reabrir navegador. Fakes não comprovam backend; emulador não reproduz todas as políticas/limites de produção. Não há UI de confirmação ou navegação implementada.
+
+Próxima tarefa, somente após aprovação: M4.3 — SessionController, SessionGate, tratamento de perfil ausente/parcial e ligação pós-bootstrap da composição já preparada. Revisar estratégia de retry explícito de configuração e descarte de respostas por UID no controller. Sem novas dependências, serviços, deploy, staging, commit ou push. Contas A/B/C e perfis A/C preservados; JSON redundante não incluído no Git.
+
+## M4.1 — Contratos, modelos e validações implementados
+
+O usuário aprovou o plano de M4 e explicitamente o Perfil mínimo real como destino privado temporário após login, substituído pelo Dashboard no M5. Autorização de implementação limitada a M4.1; M4.2 e posteriores NÃO autorizados. Decisões registradas também em PLANO_M4.md, sem alteração de navegação ou tela.
+
+Arquivos criados:
+
+- `lib/domain/models/auth_user.dart`: identidade imutável com UID obrigatório e e-mail válido/normalizado; sem dados de perfil ou credenciais.
+- `lib/domain/models/auth_failure.dart`: AuthFailure/15 tipos de falha, códigos estáveis de domínio, mensagens pt-BR e confirmação neutra de recuperação. Não aceita mensagens arbitrárias do provedor ou valores digitados.
+- `lib/domain/repositories/auth_repository.dart`: contrato abstrato com stream inicial/de mudanças, signIn, signUp, sendPasswordReset e signOut. Sem SDK, implementações Firebase ou persistência de credenciais.
+- `lib/domain/services/auth_validation.dart`: funções puras para nome, e-mail, senha de cadastro/login e confirmação; retorno AuthFailure ou null.
+- `test/domain/auth_validation_test.dart` e `test/domain/auth_models_test.dart`: 38 novos testes locais.
+
+Documentos alterados: `docs/PLANO_M4.md` e `docs/PROGRESSO.md`. O plano já estava não rastreado antes desta implementação; foi preservado e atualizado. Nenhuma alteração em dependências, UI, repositórios financeiros, configuração Firebase, regras, índices ou memória Gradle. JSON redundante em assets/illustrations preservado e fora do staging.
+
+Decisões técnicas:
+
+- AuthUser usa campos final, rejeita UID vazio e guarda e-mail com trim/lowercase. O UID não é escolhido/transformado pela validação; virá do provedor no M4.2.
+- Nome usa trim, máximo de 80 runes incluindo espaços internos e pelo menos dois caracteres não brancos, sem exigir sobrenome; acentuação e Unicode aceitos. Compatível com os limites existentes do perfil, sem modificá-lo.
+- E-mail usa validação básica compatível com o perfil atual e normalização idempotente. Mantém aliases e acentos; não é um validador completo de RFC nem comprova endereço existente/aceitação pelo provedor.
+- Login exige somente senha não vazia. Cadastro exige pelo menos 8 runes Unicode; confirmação compara o texto exatamente. Espaços, caixa e sequências Unicode não são normalizados, truncados ou registrados; até senha apenas com espaços é aceita pela regra local se tiver 8 caracteres, sem inventar requisito de complexidade. O provedor pode aplicar política mais restritiva no M4.2.
+- Códigos de falha não são códigos Firebase; a tradução contextual pertence ao adaptador futuro. Credenciais inválidas usam mensagem genérica e recuperação tem texto neutro. Falhas de rede/serviço têm tipos próprios e não devem virar falso sucesso. Cadastro existente orienta entrar/recuperar. Nenhuma autenticação simulada foi ligada ao app; a prova mínima do contrato existe somente no teste.
+
+Verificações executadas sequencialmente:
+
+| Comando | Resultado real |
+|---|---|
+| `dart format .` | 41 arquivos verificados, 3 formatados; exit 0 |
+| `flutter analyze` | 0 erros, 0 warnings, 10 informes deprecated_member_use preexistentes; exit 1 pelos informes |
+| `flutter test --concurrency=1` | 127 testes aprovados, 0 falhas: 89 anteriores + 38 novos; exit 0 |
+| `git diff --check` | Aprovado; avisos locais LF/CRLF não representam erro do diff |
+
+Cobertura nova: nomes válidos/inválidos/limites/acentos/Unicode; e-mails válidos/inválidos e normalização; cadastro 7/8 caracteres, Unicode e texto longo sem truncar; login curto e vazio; espaços em senhas; confirmação obrigatória, diferenças de caixa e composição Unicode; validação/imutabilidade de AuthUser/AuthFailure; códigos/mensagens e assinaturas abstratas do contrato. Contagem de Unicode usa runes, não grafemas visuais. O teste de bootstrap existente imprime StateError intencional para testar erro/retry; a suíte terminou aprovada, sem falha Firebase real.
+
+Logs locais ignorados: `build/m4-1-analyze.log` e `build/m4-1-tests.log`. Nenhum teste remoto, criação/alteração/exclusão de conta ou documento, build Android/Web, deploy, commit ou push nesta etapa.
+
+Limitações e próxima etapa: M4.1 valida domínio puro; não comprova login, envio de e-mail, persistência de sessão ou tradução dos códigos reais do SDK. Nenhuma revisão visual necessária porque UI não mudou. Usuário deve revisar esta entrega; somente após nova autorização iniciar M4.2 (FirebaseAuthRepository, mapper, composição e integração local conforme plano). Contas A/B/C e perfis A/C continuam retidos por decisão aprovada. Não avançar automaticamente.
+
+## M4 — Histórico do planejamento (plano posteriormente aprovado)
+
+Plano registrado em `docs/PLANO_M4.md`, após consulta a AGENTS.md, PLANO.md, este progresso, documentos 01–05, protótipo oficial e componentes/infraestrutura existentes. M3 permanece concluído e registrado no commit `e34c884ed79cf041e5371c997dde7cd93cd9abad`; a retenção de A/B/C e perfis A/C continua aprovada e sem pendência de exclusão.
+
+Proposta: AuthRepository/FirebaseAuthRepository e modelos próprios sem SDK no domínio; SessionController com ChangeNotifier/ListenableBuilder; SessionGate e Navigator nativo; reutilizar FirebaseStartup, FirebaseSession, FirestoreUserRepository idempotente, UserProfile e tema atual. AuthRepository ainda não existe no código e será criado somente na implementação autorizada. Nenhuma dependência adicional prevista.
+
+Fluxos planejados: login, cadastro, recuperação com confirmação neutra, persistência Android/Web, recomposição de perfil ausente, tratamento de cadastro parcial, logout e limpeza de pilhas/estado ao mudar UID. Nome/e-mail reais, nenhuma senha no Firestore/logs, envio duplicado bloqueado. Boas-vindas/logo/carrossel serão preservados; seus botões só serão ligados quando os destinos estiverem prontos.
+
+Decisão pendente de revisão: os documentos levam ao Dashboard após login, mas ele pertence ao M5. Propõe-se usar o Perfil mínimo real como destino privado do M4, sem dashboard provisório, dados financeiros ou abas inexistentes. Aprovar essa adaptação antes de implementar; requisitos-base e critérios financeiros permanecem intactos. Perfil ausente solicita nome real, sem recadastrar usuário.
+
+Etapas futuras, ainda não iniciadas:
+
+- [x] M4.0 — Revisar fontes, infraestrutura e protótipo; criar planejamento técnico.
+- [x] Revisão/aprovação do plano e da adaptação do destino privado.
+- [x] M4.1 — Contrato/modelos de autenticação, validações e testes puros: 38 testes novos aprovados, aguardando revisão da entrega.
+- [x] M4.2 — Adaptador Firebase, mensagens por contexto e composição: 59 novos testes locais e 12 verificações em emuladores aprovados; aguardando revisão.
+- [x] M4.3 — Sessão, gate injetável e recuperação idempotente de perfil: 42 novos testes aprovados; aguardando revisão, sem ativação de telas incompletas em produção.
+- [ ] M4.4 — Login, recuperação e perfil mínimo; conectar Entrar.
+- [ ] M4.5 — Cadastro e completar perfil; conectar Criar conta.
+- [ ] M4.6 — Homologação Android/Web, reinício/reload, e-mail de recuperação e comparação visual.
+
+Testes previstos: unitários de validação/erros, widgets de formulários/rotas/semântica, concorrência e troca de UID com fakes pequenos, integração Auth/Firestore no projeto local demo-bolsozen e posterior homologação autorizada com SDK real. Novas contas/e-mails remotos exigem plano e autorização específicos; não reutilizar credenciais descartadas do M3. Homologar recebimento de recuperação requer e-mail de teste acessível e participação humana. Não afirmar persistência após reinício com base em hot reload, nem entrega de e-mail somente pela solicitação ao SDK.
+
+Arquivos alterados nesta etapa: somente `docs/PLANO_M4.md` (novo) e `docs/PROGRESSO.md`. Validação documental e `git diff --check`; sem código, testes Flutter, build, instalação, Firebase remoto, deploy, staging ou commit. `assets/illustrations/google-services.json` preservado, não incluído. Próxima tarefa: usuário revisar o plano e autorizar a implementação; M5 não autorizado.
+
 ## Encerramento definitivo do M3 — aprovado em 17/11/2026
 
 M3 concluído e aprovado tecnicamente pelo usuário. Esta decisão substitui as pendências históricas de aprovação, execução Dart, suporte Web e limpeza registradas nas seções anteriores. Os relatos e limitações das execuções foram preservados abaixo. M4 não autorizado.
@@ -92,14 +486,14 @@ Estado histórico desta entrega Web: aguardava revisão. Revisão aprovada no en
 - [ ] M1 — Implementado / Não validado integralmente: testes automatizados aprovados; Android e revisão visual pendentes; avisos do SDK registrados abaixo.
 - [x] M2 — Domínio financeiro e testes: concluído no escopo puro, 53 testes unitários aprovados.
 - [x] M3 — Concluído e aprovado: Android, Web e Firebase validados nos escopos registrados; 89 testes Flutter, 77 de segurança, 28 verificações JS e 16 Android/Dart aprovados. Contas A/B/C e perfis A/C mantidos por decisão aprovada, sem bloqueio.
-- [ ] M4 — Autenticação completa.
+- [ ] M4 — M4.1/M4.2 aprovados; M4.3 implementado e testado, aguardando revisão. M4.4 e posteriores não autorizados.
 - [ ] M5 — Transações e dashboard essencial.
 - [ ] M6 — Gestão e histórico completos.
 - [ ] M7 — Orçamento mensal.
 - [ ] M8 — Relatórios.
 - [ ] M9 — Homologação e APK.
 
-M1 e M2 autorizados e implementados, com pendências próprias registradas. M3 autorizado, entrega local detalhada abaixo. M4 a M9 aguardam autorização individual. Detalhes em PLANO.md.
+M1 e M2 autorizados e implementados, com pendências próprias registradas. M3 concluído e registrado em e34c884. M4 com plano aprovado, M4.1/M4.2 revisados/aprovados e M4.3 entregue; demais subetapas aguardam autorização. M5 a M9 aguardam autorização individual. Detalhes em PLANO.md e PLANO_M4.md.
 
 ## Evidências do M0
 
@@ -120,7 +514,7 @@ M1 e M2 autorizados e implementados, com pendências próprias registradas. M3 a
 
 ## Próxima tarefa recomendada
 
-Revisar a seleção pré-commit do M3 descrita no encerramento acima. Commit e início de M4 exigem autorização própria. Não repetir cadastros/testes remotos ou excluir contas e perfis retidos.
+Revisar a entrega M4.3 e autorizar separadamente M4.4, se desejar. Perfil mínimo temporário já aprovado para o M4. Não repetir cadastros/testes remotos ou excluir contas e perfis retidos. Nenhum commit novo autorizado.
 
 ## Entrega M1
 

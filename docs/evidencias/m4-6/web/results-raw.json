@@ -1,0 +1,27 @@
+{
+  "project": "demo-bolsozen",
+  "origin": "http://localhost:7366",
+  "remoteOperations": false,
+  "status": "interrupted",
+  "failure": "UI_EXPECTATION_TIMEOUT",
+  "checksPassed": 4,
+  "results": [
+    {
+      "name": "public_gate_hides_profile",
+      "passed": true
+    },
+    {
+      "name": "firebase_bootstrap_public_ui",
+      "passed": true
+    },
+    {
+      "name": "registration_empty_validation",
+      "passed": true
+    },
+    {
+      "name": "registration_firestore_profile_confirmed",
+      "passed": true
+    }
+  ],
+  "limitation": "Browser reload is not Android process restart; reset delivery only local emulator; missing-profile account fixture created by Node client SDK."
+}

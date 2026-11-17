@@ -11,8 +11,9 @@ final class FirestoreUserRepository implements UserRepository {
   final FirebaseSession session;
 
   @override
-  Future<UserProfile?> fetch() => guardData(() async {
+  Future<UserProfile?> fetch({String? expectedUserId}) => guardData(() async {
     final uid = session.uid;
+    if (expectedUserId != null) session.verify(expectedUserId);
     final snapshot = await session
         .user(uid)
         .get(const GetOptions(source: Source.server));
@@ -23,30 +24,33 @@ final class FirestoreUserRepository implements UserRepository {
   });
 
   @override
-  Future<void> ensureProfile({required String displayName}) =>
-      guardData(() async {
-        final uid = session.uid;
-        final value = UserProfile(
-          userId: uid,
-          displayName: displayName,
-          email: session.auth.currentUser?.email ?? '',
-          createdAt: DateTime.fromMillisecondsSinceEpoch(0),
-        );
-        final ref = session.user(uid);
-        await session.firestore.runTransaction((tx) async {
-          session.verify(uid);
-          final snapshot = await tx.get(ref);
-          if (snapshot.exists) {
-            FirestoreMappers.profile(uid, snapshot.data()!);
-          } else {
-            session.verify(uid);
-            tx.set(ref, {
-              'displayName': value.displayName,
-              'email': value.email,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
-          }
-        });
+  Future<void> ensureProfile({
+    required String displayName,
+    String? expectedUserId,
+  }) => guardData(() async {
+    final uid = session.uid;
+    if (expectedUserId != null) session.verify(expectedUserId);
+    final value = UserProfile(
+      userId: uid,
+      displayName: displayName,
+      email: session.auth.currentUser?.email ?? '',
+      createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+    );
+    final ref = session.user(uid);
+    await session.firestore.runTransaction((tx) async {
+      session.verify(uid);
+      final snapshot = await tx.get(ref);
+      if (snapshot.exists) {
+        FirestoreMappers.profile(uid, snapshot.data()!);
+      } else {
         session.verify(uid);
-      });
+        tx.set(ref, {
+          'displayName': value.displayName,
+          'email': value.email,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+    });
+    session.verify(uid);
+  });
 }

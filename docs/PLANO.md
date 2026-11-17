@@ -79,6 +79,17 @@ Dependências cumulativas. Em todo marco relevante: dart format ., flutter analy
 | M8 | Três vistas, gráficos acessíveis e comparação; reports/widgets | M7; nenhuma nova | CA-09; seis meses/virada de ano, vazio/base zero e atualização após CRUD | Revisar gráficos e screenshots |
 | M9 | Homologação, README, evidências e APK; testes de integração/documentação | M8 e ambiente Android | CA-01 a CA-12, MAN-01 a MAN-12; APK instalado/executado e P0/P1 aprovados | Homologar e decidir assinatura; chave privada fora do Git |
 
+## Backlog M9 recebido no encerramento do M4
+
+Por decisão explícita do usuário, M4 encerrado/aprovado com ressalvas sem repetir a homologação completa. Evidências e distinção entre resultados locais/manuais em [M4_HOMOLOGACAO.md](M4_HOMOLOGACAO.md). Acrescentar à homologação final M9, sem ampliar funcionalidades:
+
+- Confirmar persistência autenticada após encerramento/reabertura real do processo Android, perfil/logout e Voltar sem recuperar área privada.
+- Completar a bateria Chrome automatizada em origem fixa (reload, histórico, sessão e fluxos restantes), usando a asserção corrigida e recursos avaliados após o OOM; não aprovar a quarta asserção bruta invalidada.
+- Homologar teclado virtual Android e TalkBack manualmente, com texto ampliado e responsividade.
+- Revisar os 20 informes de depreciação do analyzer, sem supressão ou alteração de dependências fora de autorização própria.
+
+Ressalvas aceitas não bloqueiam o encerramento do M4. Execução futura exige autorização do respectivo marco; novas contas/e-mails ou operações remotas continuam exigindo roteiro aprovado. Este registro não inicia M9 nem autoriza implementar M5. Google Login e BolsoZen Bot permanecem ideias futuras fora do MVP.
+
 ## Testes, riscos e entrega
 
 Testes unitários cobrem RN-01 a RN-10; widgets cobrem validações, estados e navegação; integração cobre sessão, persistência, CRUD e troca de conta; regras exercitam acesso direto adversarial. T1: saldo R$ 600,00, novembro receitas R$ 1.000,00/despesas R$ 350,00, outubro despesas R$ 50,00. T2: alimentação 83,33%, transporte 50%, global 70%. Variação novembro/outubro +600%. Reproduzir edições/exclusões do CA-07.

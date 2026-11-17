@@ -1,4 +1,5 @@
 import 'package:bolsozen/app/app.dart';
+import 'package:bolsozen/presentation/screens/welcome/welcome_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -58,19 +59,29 @@ void main() {
       semantics.dispose();
     }
   });
-  for (final label in ['Entrar', 'Criar conta']) {
-    testWidgets('$label informa etapa posterior sem navegar', (tester) async {
-      await tester.pumpWidget(const BolsoZenApp());
+  testWidgets('Entrar utiliza a ação de navegação injetada', (tester) async {
+    var opened = false;
+    await tester.pumpWidget(
+      BolsoZenApp(home: WelcomeScreen(onSignIn: () => opened = true)),
+    );
+    await tester.ensureVisible(find.text('Entrar'));
+    await tester.tap(find.text('Entrar'));
+    expect(opened, isTrue);
+    expect(find.byType(AlertDialog), findsNothing);
+  });
+  for (final label in ['Criar conta']) {
+    testWidgets('$label utiliza ação real de navegação injetada', (
+      tester,
+    ) async {
+      var opened = false;
+      await tester.pumpWidget(
+        BolsoZenApp(home: WelcomeScreen(onRegister: () => opened = true)),
+      );
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text(label));
       await tester.tap(find.text(label));
       await tester.pumpAndSettle();
-      expect(
-        find.text('$label estará disponível em uma etapa posterior.'),
-        findsOneWidget,
-      );
-      await tester.tap(find.text('Entendi'));
-      await tester.pumpAndSettle();
+      expect(opened, isTrue);
       expect(find.byType(AlertDialog), findsNothing);
       expect(find.byType(Scaffold), findsOneWidget);
     });
@@ -84,12 +95,16 @@ void main() {
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-        await tester.pumpWidget(const BolsoZenApp());
+        var opened = false;
+        await tester.pumpWidget(
+          BolsoZenApp(home: WelcomeScreen(onRegister: () => opened = true)),
+        );
         await tester.pumpAndSettle();
         await tester.ensureVisible(find.text('Criar conta'));
         await tester.tap(find.text('Criar conta'));
         await tester.pumpAndSettle();
-        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(opened, isTrue);
+        expect(find.byType(AlertDialog), findsNothing);
         expect(tester.takeException(), isNull);
       });
     }
