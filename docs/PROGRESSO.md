@@ -4,7 +4,7 @@
 
 - Flutter 3.50.0 stable e Dart 3.14.0 identificados nos metadados locais.
 - Cinco documentos e protótipo analisados; AGENTS.md lido.
-- Contador substituído pela tela de boas-vindas e fundação visual M1; sem funcionalidades financeiras ou Firebase.
+- Tela de boas-vindas e fundação visual M1 implementadas. M2 entrega domínio financeiro puro testado, ainda sem integração à interface, persistência, autenticação ou Firebase.
 - Na verificação inicial desta etapa: main limpa, um commit à frente da referência local origin/main; sem fetch.
 - M0 criou somente os documentos. M1 altera a base Flutter e dependências conforme detalhado abaixo; sem commit.
 
@@ -13,7 +13,7 @@
 - [x] Análise do repositório, documentos e protótipo.
 - [x] M0 — Registrar planejamento técnico e progresso.
 - [ ] M1 — Implementado / Não validado integralmente: testes automatizados aprovados; Android e revisão visual pendentes; avisos do SDK registrados abaixo.
-- [ ] M2 — Domínio financeiro e testes.
+- [x] M2 — Domínio financeiro e testes: concluído no escopo puro, 53 testes unitários aprovados.
 - [ ] M3 — Firebase e segurança.
 - [ ] M4 — Autenticação completa.
 - [ ] M5 — Transações e dashboard essencial.
@@ -22,7 +22,7 @@
 - [ ] M8 — Relatórios.
 - [ ] M9 — Homologação e APK.
 
-M1 autorizado e implementado. M2 a M9 planejados, aguardando autorização individual. Detalhes em PLANO.md.
+M1 autorizado e implementado, com pendências próprias. M2 autorizado e concluído no escopo de domínio. M3 a M9 aguardam autorização individual. Detalhes em PLANO.md.
 
 ## Evidências do M0
 
@@ -43,7 +43,7 @@ M1 autorizado e implementado. M2 a M9 planejados, aguardando autorização indiv
 
 ## Próxima tarefa recomendada
 
-Validar M1 no Android e revisar a divergência de depreciação do SDK antes de considerá-lo concluído. Não iniciar M2 sem autorização.
+Revisar a entrega do M2 e autorizar separadamente M3 antes de qualquer integração. Permanecem validação Android/visual do M1 e decisão sobre depreciações do SDK.
 
 ## Entrega M1
 
@@ -95,6 +95,47 @@ Validar M1 no Android e revisar a divergência de depreciação do SDK antes de 
 - Validações manuais pendentes: renderização Android, aparência/transparência das imagens em fundo branco, proporções/espaçamentos, swipe real, indicador e TalkBack, comparação com o protótipo. Permanece a decisão sobre depreciações do SDK antes de encerrar integralmente M1. Não iniciar M2 sem autorização; sem commit.
 
 ## Registro das próximas fases
+
+## Entrega M2 — domínio financeiro
+
+Estado: Concluído no escopo autorizado de domínio puro. Nenhuma alteração na UI, configuração Firebase, implementação de persistência, autenticação, dependência nova ou commit.
+
+### Arquivos criados
+
+- lib/domain/models/category.dart: TransactionType e catálogo fechado de dez categorias, IDs estáveis, rótulos pt-BR e compatibilidade por tipo.
+- lib/domain/models/financial_month.dart: competência com chave YYYY-MM, igualdade por valor, deslocamento mensal e agrupamento pelo calendário local.
+- lib/domain/models/financial_transaction.dart: modelo imutável validado, centavos positivos, descrição trim de 1–120 caracteres, categoria compatível e copyWith preservando identidade/criação.
+- lib/domain/models/monthly_budget.dart: limite imutável por usuário/mês/categoria de despesa, valor positivo e ID determinístico.
+- lib/domain/models/financial_summary.dart: resultados imutáveis de totais mensais, utilização, distribuição, evolução e histórico. Percentuais são double derivados; dinheiro continua int. Coleções de saída não modificáveis.
+- lib/domain/repositories/transaction_repository.dart: contrato financeiro por UID, consulta paginada com cursor de domínio e operações criar/editar/excluir; sem tipos Firebase. Criação retorna ID gerado pela implementação futura.
+- lib/domain/repositories/budget_repository.dart: contrato financeiro por UID, consulta, salvar/substituir e remover limite mensal. Sem implementações, mocks ou contratos de autenticação antecipados.
+- lib/domain/services/money.dart: parsing estrito de valores positivos pt-BR com agrupamento opcional, R$ e 1–2 casas decimais; formatação exata em BRL, inclusive saldo zero/negativo. Sem conversão monetária para double.
+- lib/domain/services/financial_calculator.dart: funções puras, sem Flutter/Firebase/relógio. Recebem UID, competência, transações completas e limites; ignoram dados de outros UIDs. Saldo global, totais mensais, ordenação, categorias, orçamento, comparação e evolução de seis meses. Agregações protegem contra overflow do inteiro nativo com BigInt intermediário, retornando int ou erro explícito.
+- test/domain/fixtures.dart: conjuntos controlados apenas para testes.
+- test/domain/money_test.dart, models_test.dart e financial_calculator_test.dart: 53 testes unitários do domínio.
+- docs/PROGRESSO.md atualizado; demais arquivos preexistentes preservados.
+
+### Regras e evidências
+
+- T1: saldo 60000 centavos, receita novembro 100000, despesa novembro 35000 e outubro 5000; seleção mensal não muda saldo global.
+- T2: alimentação 83,33%, transporte 50%, indicador global 70%; despesas sem limite não entram no indicador. Percentuais acima de 100% não truncados; atenção em 80% e atingido em 100%, com comparação inteira dos limiares.
+- Relatórios: participação alimentação ≈71,43% e transporte ≈28,57%, variação +600%, evolução de seis meses com virada de ano; redução pode ser negativa e base anterior zero retorna null.
+- CA-07 reproduzido: edição para R$ 200 gera saldo R$ 650,00, novembro R$ 300,00 e alimentação 66,67%; mudança para outubro redistribui totais sem alterar saldo; exclusão de transporte eleva saldo a R$ 750,00.
+- Cobertos: saldos positivo/zero/negativo, centavos além da precisão de double no runtime nativo, inválidos, categorias incompatíveis, valores zero/negativos, futura ocorrência, auditoria distinta da ocorrência, conversão UTC/local, ordenação por ocorrência/criação/ID ascendente, imutabilidade, remoção de limite e ausência de herança mensal.
+- Sem limites: percentual/status null; sem despesas: distribuição vazia, nunca dados fictícios. Nenhuma divisão por zero. Duplicação de limites na mesma competência/categoria é recusada em vez de sobrescrever silenciosamente o cálculo.
+- dart format .: aprovado, 20 arquivos processados na última execução, 0 alterações.
+- dart analyze lib/domain: aprovado, No issues found.
+- flutter analyze: executado; permanecem somente os 8 diagnósticos informativos preexistentes de deprecated_member_use do M1, saída 1; nenhum diagnóstico no M2. Seis apontamentos iniciais de estilo dos novos arquivos foram corrigidos e as verificações repetidas.
+- flutter test: aprovado, 64/64 (53 domínio + 11 widgets preexistentes).
+- git diff --check: aprovado. Nenhuma instalação, publicação ou alteração de dependências.
+
+### Limitações e pendências antes de M3
+
+- Contratos não têm implementação: geração de IDs/auditoria, paginação real, Firestore, índices e segurança de acesso devem ser implementados/testados apenas no M3 autorizado. Filtragem por UID no cálculo não substitui regras de segurança.
+- Chamador deve fornecer histórico completo sem duplicatas; o domínio não infere se faltam páginas. Meses são agrupados pelo fuso local do runtime, sem fuso fixo adicional. Testes validam UTC/local no ambiente atual; variações entre dispositivos permanecem para integração.
+- Valores monetários usam faixa de int do runtime Android/nativo; excesso é rejeitado, sem arredondamento silencioso. Web não é critério do MVP. Categorias/descrição são validadas por construtores, e dados inválidos vindos de serviços devem ser tratados na camada de dados futura.
+- Autorização do usuário, acesso ao Console, região e ferramentas Firebase ainda pendentes para M3. Pendências visuais/Android e depreciações do M1 permanecem independentes desta entrega.
+- Validação manual sugerida: revisar os contratos e os resultados T1/T2 antes de autorizar M3. Não há tela financeira a validar neste marco.
 
 ### Revisão M1 — logo ampliada e tipografia
 
