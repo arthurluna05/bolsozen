@@ -1,0 +1,17 @@
+{
+  "name": "bolsozen-local-security-tests",
+  "private": true,
+  "overrides": { "@grpc/grpc-js": "^1.13.6" },
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 rules.test.mjs",
+    "test:remote:client": "node m3_remote_client.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "firebase": "^12.19.0"
+  }
+}

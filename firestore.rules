@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    function expenseCategory(category) {
+      return category in ['food', 'transport', 'shopping', 'leisure', 'health', 'education', 'housing', 'other_expense'];
+    }
+    function validCategory(type, category) {
+      return (type == 'expense' && expenseCategory(category)) ||
+        (type == 'income' && category in ['salary', 'other_income']);
+    }
+    function validTransaction(d, uid) {
+      return d.keys().hasAll(['userId', 'type', 'amountCents', 'categoryId', 'description', 'occurredAt', 'createdAt', 'updatedAt']) &&
+        d.keys().hasOnly(['userId', 'type', 'amountCents', 'categoryId', 'description', 'occurredAt', 'createdAt', 'updatedAt']) &&
+        d.userId == uid && d.type is string && d.categoryId is string && validCategory(d.type, d.categoryId) &&
+        d.amountCents is int && d.amountCents > 0 &&
+        d.description is string && d.description.size() >= 1 && d.description.size() <= 120 &&
+        d.description.matches('[\\s\\S]*[^\\s][\\s\\S]*') &&
+        d.occurredAt is timestamp && d.createdAt is timestamp && d.updatedAt is timestamp;
+    }
+    function validBudget(d, uid, id) {
+      return d.keys().hasAll(['userId', 'monthKey', 'categoryId', 'limitCents', 'createdAt', 'updatedAt']) &&
+        d.keys().hasOnly(['userId', 'monthKey', 'categoryId', 'limitCents', 'createdAt', 'updatedAt']) &&
+        d.userId == uid && d.monthKey is string &&
+        d.monthKey.matches('[0-9]{4}-(0[1-9]|1[0-2])') && !d.monthKey.matches('0000-.*') &&
+        d.categoryId is string && expenseCategory(d.categoryId) && id == d.monthKey + '_' + d.categoryId &&
+        d.limitCents is int && d.limitCents > 0 && d.createdAt is timestamp && d.updatedAt is timestamp;
+    }
+    function validProfile(d) {
+      return d.keys().hasAll(['displayName', 'email', 'createdAt']) && d.keys().hasOnly(['displayName', 'email', 'createdAt']) &&
+        d.displayName is string && d.displayName.size() >= 2 && d.displayName.size() <= 80 &&
+        d.displayName.matches('.*[^\\s].*[^\\s].*') &&
+        d.email is string && d.email.matches('[^\\s@]+@[^\\s@]+\\.[^\\s@]+') &&
+        d.email == request.auth.token.email && d.createdAt is timestamp;
+    }
+    match /users/{uid} {
+      allow read: if owner(uid);
+      allow create: if owner(uid) && validProfile(request.resource.data) && request.resource.data.createdAt == request.time;
+      allow update: if owner(uid) && validProfile(request.resource.data) && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+      match /transactions/{id} {
+        allow read: if owner(uid);
+        allow create: if owner(uid) && validTransaction(request.resource.data, uid) &&
+          request.resource.data.createdAt == request.time && request.resource.data.updatedAt == request.time;
+        allow update: if owner(uid) && resource.data.userId == uid && validTransaction(request.resource.data, uid) &&
+          request.resource.data.userId == resource.data.userId && request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.updatedAt == request.time;
+        allow delete: if owner(uid) && resource.data.userId == uid;
+      }
+      match /budgets/{id} {
+        allow read: if owner(uid);
+        allow create: if owner(uid) && validBudget(request.resource.data, uid, id) &&
+          request.resource.data.createdAt == request.time && request.resource.data.updatedAt == request.time;
+        allow update: if owner(uid) && resource.data.userId == uid && validBudget(request.resource.data, uid, id) &&
+          request.resource.data.userId == resource.data.userId && request.resource.data.monthKey == resource.data.monthKey &&
+          request.resource.data.categoryId == resource.data.categoryId && request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.updatedAt == request.time;
+        allow delete: if owner(uid) && resource.data.userId == uid;
+      }
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

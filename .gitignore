@@ -57,3 +57,11 @@ android/key.properties
 service-account*.json
 .dart_tool
 build
+
+# Ferramentas e artefatos locais de testes Firebase
+**/node_modules/
+.firebase/
+android/.kotlin/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "691532851056",
+    "project_id": "bolsozen-f2f35",
+    "storage_bucket": "bolsozen-f2f35.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:691532851056:android:de5076a8ee9cd05dc0d1b5",
+        "android_client_info": {
+          "package_name": "com.bolsozen.bolsozen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZViXS_l7GtZ6yx96xs0N2tS9l7Fq3dgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

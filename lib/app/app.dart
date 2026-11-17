@@ -5,7 +5,8 @@ import '../core/theme/app_theme.dart';
 import '../presentation/screens/welcome/welcome_screen.dart';
 
 class BolsoZenApp extends StatelessWidget {
-  const BolsoZenApp({super.key});
+  const BolsoZenApp({this.home = const WelcomeScreen(), super.key});
+  final Widget home;
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'BolsoZen',
@@ -14,6 +15,6 @@ class BolsoZenApp extends StatelessWidget {
     locale: const Locale('pt', 'BR'),
     supportedLocales: const [Locale('pt', 'BR')],
     localizationsDelegates: GlobalMaterialLocalizations.delegates,
-    home: const WelcomeScreen(),
+    home: home,
   );
 }
