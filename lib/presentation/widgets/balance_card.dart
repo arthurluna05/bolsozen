@@ -5,8 +5,15 @@ import '../../core/theme/financial_visual_tokens.dart';
 import '../../domain/services/money.dart';
 
 class BalanceCard extends StatelessWidget {
-  const BalanceCard({required this.balanceCents, super.key});
+  const BalanceCard({
+    required this.balanceCents,
+    this.visible = true,
+    this.onToggleVisibility,
+    super.key,
+  });
   final int balanceCents;
+  final bool visible;
+  final VoidCallback? onToggleVisibility;
 
   @override
   Widget build(BuildContext context) {
@@ -54,36 +61,41 @@ class BalanceCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          Money.formatCents(balanceCents),
-                          key: const ValueKey('global-balance'),
-                          style: theme.textTheme.headlineLarge!.copyWith(
-                            color: theme.colorScheme.onPrimary,
+                        Semantics(
+                          label: visible
+                              ? Money.formatCents(balanceCents)
+                              : 'Saldo oculto',
+                          excludeSemantics: true,
+                          child: Text(
+                            visible
+                                ? Money.formatCents(balanceCents)
+                                : '••••••',
+                            key: const ValueKey('global-balance'),
+                            style: theme.textTheme.headlineLarge!.copyWith(
+                              color: theme.colorScheme.onPrimary,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  Tooltip(
-                    message: 'Ocultar saldo disponível no M6.',
-                    child: Semantics(
-                      label: 'Ocultar saldo disponível no M6.',
-                      button: true,
-                      enabled: false,
-                      excludeSemantics: true,
-                      child: IconButton(
-                        onPressed: null,
-                        disabledColor: theme.colorScheme.onPrimary,
-                        style: IconButton.styleFrom(
-                          disabledBackgroundColor:
-                              FinancialVisualTokens.balanceEnd,
-                          backgroundColor: theme.colorScheme.onPrimary
-                              .withValues(alpha: 0.08),
-                          shape: const CircleBorder(),
-                        ),
-                        icon: const Icon(Icons.visibility_outlined, size: 20),
-                      ),
+                  IconButton(
+                    key: const ValueKey('balance-visibility'),
+                    tooltip: visible ? 'Ocultar saldo' : 'Mostrar saldo',
+                    onPressed: onToggleVisibility,
+                    color: theme.colorScheme.onPrimary,
+                    disabledColor: theme.colorScheme.onPrimary,
+                    style: IconButton.styleFrom(
+                      disabledBackgroundColor: FinancialVisualTokens.balanceEnd,
+                      backgroundColor: FinancialVisualTokens.balanceEnd,
+                      shape: const CircleBorder(),
+                    ),
+                    icon: Icon(
+                      visible
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      size: 20,
                     ),
                   ),
                 ],

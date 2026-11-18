@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../domain/models/user_profile.dart';
+import '../domain/models/financial_transaction.dart';
+import '../core/theme/app_colors.dart';
+import '../presentation/widgets/transaction_actions_sheet.dart';
+import '../presentation/widgets/delete_transaction_dialog.dart';
 import '../domain/repositories/transaction_repository.dart';
 import '../presentation/controllers/financial_controller.dart';
 import '../presentation/controllers/session_controller.dart';
@@ -55,19 +59,64 @@ class _MainShellState extends State<MainShell> {
     }
   }
 
-  Future<void> _openTransaction() async {
-    if (!_ready || _formOpen) return;
+  Future<void> _openTransaction([FinancialTransaction? original]) async {
+    if (!_ready ||
+        _formOpen ||
+        (original != null && !_financial!.canEdit(original))) {
+      return;
+    }
     _formOpen = true;
     try {
       // Este contexto pertence ao Navigator privado do SessionGate.
       await Navigator.of(context).push<bool>(
         MaterialPageRoute(
-          builder: (_) => TransactionFormScreen(controller: _financial!),
+          builder: (_) => TransactionFormScreen(
+            controller: _financial!,
+            transaction: original,
+          ),
         ),
       );
       // O controller já confirmou a recarga; voltar não consulta novamente.
     } finally {
       _formOpen = false;
+    }
+  }
+
+  Future<void> _openActions(FinancialTransaction original) async {
+    if (!_ready || _formOpen || !_financial!.canEdit(original)) return;
+    _formOpen = true;
+    TransactionAction? action;
+    try {
+      action = await showModalBottomSheet<TransactionAction>(
+        context: context,
+        useSafeArea: true,
+        isScrollControlled: true,
+        showDragHandle: true,
+        backgroundColor: AppColors.surface,
+        builder: (_) => TransactionActionsSheet(transaction: original),
+      );
+    } finally {
+      _formOpen = false;
+    }
+    if (!mounted || !_ready) return;
+    if (action == TransactionAction.edit) {
+      await _openTransaction(original);
+    } else if (action == TransactionAction.delete &&
+        !_formOpen &&
+        _financial!.canEdit(original)) {
+      _formOpen = true;
+      try {
+        await showDialog<bool>(
+          context: context,
+          useRootNavigator: false,
+          builder: (_) => DeleteTransactionDialog(
+            controller: _financial!,
+            transaction: original,
+          ),
+        );
+      } finally {
+        _formOpen = false;
+      }
     }
   }
 
@@ -96,6 +145,7 @@ class _MainShellState extends State<MainShell> {
             TransactionsScreen(
               controller: financial,
               onAddTransaction: _openTransaction,
+              onTransactionActions: _openActions,
             ),
             ProfileScreen(session: widget.session, profile: widget.profile),
           ],

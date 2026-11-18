@@ -1,0 +1,88 @@
+{
+  "renderer": "Flutter test engine, RepaintBoundary.toImage; não Android/Chrome",
+  "reference": "TEL-05/TEL-06 e Design System; menu complementar Material",
+  "remoteFirebase": false,
+  "fixtureOnly": true,
+  "captures": [
+    {
+      "file": "acoes-390-texto-1-teclado-0.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 0.0,
+      "reads": 1,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "editar-despesa-390-texto-1-teclado-0.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 0.0,
+      "reads": 1,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "editar-receita-390-texto-1-teclado-0.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 0.0,
+      "reads": 1,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "editar-despesa-360-texto-1-teclado-0.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 0.0,
+      "reads": 1,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "editar-despesa-412-texto-1-teclado-0.png",
+      "width": 412.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 0.0,
+      "reads": 1,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "acoes-360-texto-2-teclado-0.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 2.0,
+      "simulatedKeyboardInset": 0.0,
+      "reads": 1,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "editar-despesa-360-texto-2-teclado-0.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 2.0,
+      "simulatedKeyboardInset": 0.0,
+      "reads": 1,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "editar-despesa-360-texto-1-teclado-300.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 300.0,
+      "reads": 1,
+      "writes": 0,
+      "updates": 0
+    }
+  ]
+}

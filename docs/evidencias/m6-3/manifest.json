@@ -1,0 +1,88 @@
+{
+  "renderer": "Flutter test engine, RepaintBoundary.toImage; não Android/Chrome",
+  "reference": "TEL-06/Design System e diálogo complementar Material",
+  "remoteFirebase": false,
+  "fixtureOnly": true,
+  "captures": [
+    {
+      "file": "acoes-390-texto-1.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "extendedFixture": false,
+      "deletes": 0,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "confirmar-despesa-390-texto-1.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "extendedFixture": false,
+      "deletes": 0,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "confirmar-despesa-360-texto-1.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 1.0,
+      "extendedFixture": false,
+      "deletes": 0,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "confirmar-despesa-412-texto-1.png",
+      "width": 412.0,
+      "height": 844,
+      "textScale": 1.0,
+      "extendedFixture": false,
+      "deletes": 0,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "confirmar-despesa-360-texto-2.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 2.0,
+      "extendedFixture": false,
+      "deletes": 0,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "confirmar-receita-390-texto-1.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "extendedFixture": false,
+      "deletes": 0,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "confirmar-receita-390-texto-1-valor-extenso.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "extendedFixture": true,
+      "deletes": 0,
+      "writes": 0,
+      "updates": 0
+    },
+    {
+      "file": "confirmar-receita-360-texto-2-valor-extenso.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 2.0,
+      "extendedFixture": true,
+      "deletes": 0,
+      "writes": 0,
+      "updates": 0
+    }
+  ]
+}

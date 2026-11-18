@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../data/firebase/data_failure.dart';
+import '../../../domain/models/financial_transaction.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/financial_visual_tokens.dart';
@@ -15,10 +18,12 @@ class TransactionFormScreen extends StatefulWidget {
   const TransactionFormScreen({
     required this.controller,
     this.clock,
+    this.transaction,
     super.key,
   });
   final FinancialController controller;
   final DateTime Function()? clock;
+  final FinancialTransaction? transaction;
 
   @override
   State<TransactionFormScreen> createState() => _TransactionFormScreenState();
@@ -37,10 +42,15 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
   late DateTime _date;
   TransactionSubmissionResult? _result;
   bool _refreshing = false;
+  late final FinancialTransaction? _original;
+  bool _unavailable = false;
+  bool get _editing => widget.transaction != null;
+  bool get _missing => _result?.failure?.kind == DataFailureKind.notFound;
   DateTime get _now => widget.clock?.call() ?? DateTime.now();
   bool get _locked =>
       widget.controller.isSubmitting ||
       _refreshing ||
+      _missing ||
       _result?.status == TransactionSubmissionStatus.confirmed ||
       _result?.status == TransactionSubmissionStatus.refreshPending ||
       _result?.status == TransactionSubmissionStatus.uncertain;
@@ -50,19 +60,29 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
     super.initState();
     final now = _now.toLocal();
     _date = DateTime(now.year, now.month, now.day);
+    final original = widget.transaction;
+    _unavailable = original != null && !widget.controller.canEdit(original);
+    _original = _unavailable ? null : original;
+    if (_original case final value?) {
+      _type = value.type;
+      _category = value.category;
+      _amount.text = Money.formatCents(value.amountCents);
+      _description.text = value.description;
+      _date = value.occurredAt;
+    }
     _updateDateText();
   }
 
   void _updateDateText() {
     // Data de calendário local; não é campo editável ou string persistida.
-    _dateText.text = DateFormat('dd/MM/yyyy', 'pt_BR').format(_date);
+    _dateText.text = DateFormat('dd/MM/yyyy', 'pt_BR').format(_date.toLocal());
   }
 
   Future<void> _pickDate() async {
     if (_locked) return;
     final date = await showDatePicker(
       context: context,
-      initialDate: _date,
+      initialDate: _date.toLocal(),
       currentDate: _now,
       firstDate: DateTime(1),
       lastDate: DateTime(9999, 12, 31),
@@ -73,6 +93,12 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
         date == null) {
       return;
     }
+    final originalDay = _date.toLocal();
+    if (date.year == originalDay.year &&
+        date.month == originalDay.month &&
+        date.day == originalDay.day) {
+      return;
+    }
     setState(() {
       _date = date;
       _updateDateText();
@@ -80,7 +106,7 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
   }
 
   Future<void> _submit() async {
-    if (_locked) return;
+    if (_locked || _unavailable) return;
     if (!_form.currentState!.validate()) {
       if (TransactionValidation.amount(_amount.text) != null) {
         _amountFocus.requestFocus();
@@ -92,13 +118,23 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
       return;
     }
     FocusScope.of(context).unfocus();
-    final result = await widget.controller.createTransaction(
-      type: _type,
-      amountCents: Money.parseCents(_amount.text),
-      category: _category!,
-      description: _description.text,
-      occurredAt: _date,
-    );
+    final original = _original;
+    final result = original == null
+        ? await widget.controller.createTransaction(
+            type: _type,
+            amountCents: Money.parseCents(_amount.text),
+            category: _category!,
+            description: _description.text,
+            occurredAt: _date,
+          )
+        : await widget.controller.updateTransaction(
+            original: original,
+            type: _type,
+            amountCents: Money.parseCents(_amount.text),
+            category: _category!,
+            description: _description.text,
+            occurredAt: _date,
+          );
     if (!mounted ||
         widget.controller.phase == FinancialPhase.sessionInvalidated) {
       return;
@@ -135,6 +171,16 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
           id: _result!.id,
         );
       }
+      final expected = _result?.expectedTransaction;
+      if (_editing &&
+          _result?.status == TransactionSubmissionStatus.uncertain &&
+          expected != null &&
+          widget.controller.confirmsUpdate(expected)) {
+        _result = TransactionSubmissionResult(
+          TransactionSubmissionStatus.confirmed,
+          id: expected.id,
+        );
+      }
     });
     _closeOnConfirmed(_result!.status);
   }
@@ -163,10 +209,31 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
           ),
         );
       }
+      if (_unavailable) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('Editar transação')),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.base),
+              child: Column(
+                children: [
+                  const Text(
+                    'Transação indisponível. Atualize os dados e abra a edição novamente.',
+                  ),
+                  OutlinedButton(
+                    onPressed: controller.refresh,
+                    child: const Text('Atualizar dados'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
       final receipt = _result?.status;
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Nova transação'),
+          title: Text(_editing ? 'Editar transação' : 'Nova transação'),
           centerTitle: true,
           iconTheme: const IconThemeData(color: AppColors.primary),
           backgroundColor: AppColors.background,
@@ -362,12 +429,23 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                             Semantics(
                               liveRegion: true,
                               child: Text(switch (receipt) {
+                                TransactionSubmissionStatus.confirmed
+                                    when _editing =>
+                                  'Edição salva e dados atualizados.',
+                                TransactionSubmissionStatus.refreshPending
+                                    when _editing =>
+                                  'Edição salva; não foi possível atualizar os dados. Atualize sem salvar novamente.',
+                                TransactionSubmissionStatus.uncertain
+                                    when _editing =>
+                                  controller.requiresReconciliation
+                                      ? 'Não foi possível confirmar a edição. Atualize e confira o histórico; as alterações não serão reenviadas automaticamente.'
+                                      : 'Não foi possível confirmar as alterações esperadas. Confira o histórico e abra a edição novamente. Este formulário não será reenviado.',
                                 TransactionSubmissionStatus.confirmed =>
                                   'Movimentação salva e dados atualizados.',
                                 TransactionSubmissionStatus.refreshPending => 'Movimentação salva; não foi possível atualizar os dados. Atualize sem salvar novamente.',
                                 TransactionSubmissionStatus.uncertain =>
                                   controller.hasPendingRefresh
-                                      ? 'Há uma movimentação salva aguardando atualização. Atualize os dados antes de iniciar outro lançamento.'
+                                      ? 'Há uma alteração confirmada aguardando atualização. Atualize os dados antes de iniciar outro lançamento.'
                                       : controller.requiresReconciliation
                                       ? 'Não foi possível confirmar a gravação. Atualize e confira o histórico antes de iniciar outro lançamento.'
                                       : 'Dados atualizados. Confira o histórico antes de iniciar outro lançamento. Este formulário não será reenviado.',
@@ -378,7 +456,9 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                           ],
                           if (receipt ==
                                   TransactionSubmissionStatus.refreshPending ||
-                              receipt == TransactionSubmissionStatus.uncertain)
+                              receipt ==
+                                  TransactionSubmissionStatus.uncertain ||
+                              _missing)
                             SubmitButton(
                               label: 'Atualizar dados',
                               busy: _refreshing,
@@ -388,7 +468,9 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                               TransactionSubmissionStatus.confirmed)
                             SubmitButton(
                               key: const ValueKey('transaction-submit'),
-                              label: 'Salvar transação',
+                              label: _editing
+                                  ? 'Salvar alterações'
+                                  : 'Salvar transação',
                               busy: controller.isSubmitting,
                               onPressed: _submit,
                             ),

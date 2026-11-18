@@ -40,6 +40,8 @@ class _DashboardScreenState extends State<DashboardScreen>
   Timer? _monthTimer;
   bool _syncScheduled = false;
   bool _active = true;
+  // Preferência visual pertencente somente à árvore privada desta sessão.
+  bool _balanceVisible = true;
   FinancialController get controller => widget.controller;
   UserProfile get profile => widget.profile;
   DateTime get _now => widget.clock?.call() ?? DateTime.now();
@@ -55,6 +57,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   void _onController() {
     if (controller.phase == FinancialPhase.sessionInvalidated) {
       _monthTimer?.cancel();
+      _balanceVisible = true;
     } else if (controller.month != FinancialMonth.fromDate(_now)) {
       _scheduleSync();
     }
@@ -105,6 +108,10 @@ class _DashboardScreenState extends State<DashboardScreen>
     if (oldWidget.controller != controller) {
       oldWidget.controller.removeListener(_onController);
       controller.addListener(_onController);
+    }
+    if (oldWidget.controller != controller ||
+        oldWidget.profile.userId != profile.userId) {
+      _balanceVisible = true;
     }
     _scheduleSync();
   }
@@ -230,7 +237,21 @@ class _DashboardScreenState extends State<DashboardScreen>
                               ),
                               const SizedBox(height: AppSpacing.base),
                               if (currentSummary case final summary?) ...[
-                                BalanceCard(balanceCents: summary.balanceCents),
+                                BalanceCard(
+                                  balanceCents: summary.balanceCents,
+                                  visible: _balanceVisible,
+                                  onToggleVisibility: () {
+                                    if (profile.userId !=
+                                            controller.expectedUserId ||
+                                        controller.phase ==
+                                            FinancialPhase.sessionInvalidated) {
+                                      return;
+                                    }
+                                    setState(
+                                      () => _balanceVisible = !_balanceVisible,
+                                    );
+                                  },
+                                ),
                                 const SizedBox(height: AppSpacing.sm),
                                 MonthlyTotalsCards(totals: summary.totals),
                                 const SizedBox(height: AppSpacing.sm),

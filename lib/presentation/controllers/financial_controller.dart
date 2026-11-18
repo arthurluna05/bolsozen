@@ -33,10 +33,16 @@ enum TransactionSubmissionStatus {
 }
 
 final class TransactionSubmissionResult {
-  const TransactionSubmissionResult(this.status, {this.id, this.failure});
+  const TransactionSubmissionResult(
+    this.status, {
+    this.id,
+    this.failure,
+    this.expectedTransaction,
+  });
   final TransactionSubmissionStatus status;
   final String? id;
   final DataFailure? failure;
+  final FinancialTransaction? expectedTransaction;
 }
 
 /// Uma instância pertence a uma única sessão pronta, nunca é reutilizada por UID.
@@ -72,9 +78,14 @@ final class FinancialController extends ChangeNotifier {
   Completer<void>? _submissionDone;
   int _submissionVersion = 0;
   final _pendingCreatedIds = <String>{};
+  final _pendingUpdates = <String, FinancialTransaction>{};
+  final _pendingDeletedIds = <String>{};
 
   bool get isSubmitting => _submitting;
-  bool get hasPendingRefresh => _pendingCreatedIds.isNotEmpty;
+  bool get hasPendingRefresh =>
+      _pendingCreatedIds.isNotEmpty ||
+      _pendingUpdates.isNotEmpty ||
+      _pendingDeletedIds.isNotEmpty;
   bool get requiresReconciliation => _requiresReconciliation;
 
   FinancialMonth get month => _month;
@@ -109,6 +120,8 @@ final class FinancialController extends ChangeNotifier {
     _generation++;
     _submissionVersion++;
     _pendingCreatedIds.clear();
+    _pendingUpdates.clear();
+    _pendingDeletedIds.clear();
     _requiresReconciliation = false;
     _transactions = const [];
     _summary = null;
@@ -218,6 +231,21 @@ final class FinancialController extends ChangeNotifier {
               'Movimentação salva; não foi possível confirmar a atualização do histórico. Tente atualizar os dados.',
             );
           }
+          if (!_pendingUpdates.values.every((expected) {
+            final actual = buffer[expected.id];
+            return actual != null && _sameUpdate(actual, expected);
+          })) {
+            throw const DataFailure(
+              DataFailureKind.unavailable,
+              'Edição salva; não foi possível confirmar as alterações no histórico. Atualize os dados.',
+            );
+          }
+          if (_pendingDeletedIds.any(buffer.containsKey)) {
+            throw const DataFailure(
+              DataFailureKind.unavailable,
+              'Transação excluída; não foi possível confirmar a ausência no histórico. Atualize os dados.',
+            );
+          }
           final calculated = FinancialCalculator.summarize(
             userId: expectedUserId,
             month: _month,
@@ -226,6 +254,8 @@ final class FinancialController extends ChangeNotifier {
           if (!_current(generation)) return;
           _summary = calculated;
           _pendingCreatedIds.clear();
+          _pendingUpdates.clear();
+          _pendingDeletedIds.clear();
           _requiresReconciliation = false;
           _transactions = calculated.history;
           _failure = null;
@@ -261,7 +291,7 @@ final class FinancialController extends ChangeNotifier {
     required String description,
     required DateTime occurredAt,
   }) =>
-      _createTransaction(
+      _submitTransaction(
         type: type,
         amountCents: amountCents,
         category: category,
@@ -275,7 +305,110 @@ final class FinancialController extends ChangeNotifier {
               ),
       );
 
-  Future<TransactionSubmissionResult> _createTransaction({
+  /// Snapshot confirmado do UID atual, sem resolução de proprietário pela UI.
+  FinancialTransaction? transactionById(String id) {
+    if (!_sameSession || !hasConfirmedSnapshot) return null;
+    for (final value in _transactions) {
+      if (value.id == id) return value;
+    }
+    return null;
+  }
+
+  bool canEdit(FinancialTransaction original) {
+    final value = transactionById(original.id);
+    return value != null &&
+        !isSubmitting &&
+        !isStale &&
+        !requiresReconciliation &&
+        original.userId == expectedUserId &&
+        _sameContent(value, original);
+  }
+
+  bool confirmsUpdate(FinancialTransaction expected) {
+    final actual = transactionById(expected.id);
+    return actual != null &&
+        !isStale &&
+        !requiresReconciliation &&
+        failure == null &&
+        _sameUpdate(actual, expected);
+  }
+
+  bool confirmsDeletion(FinancialTransaction original) =>
+      _sameSession &&
+      hasConfirmedSnapshot &&
+      !isStale &&
+      !requiresReconciliation &&
+      failure == null &&
+      original.userId == expectedUserId &&
+      transactionById(original.id) == null;
+
+  Future<TransactionSubmissionResult> deleteTransaction(
+    FinancialTransaction original,
+  ) =>
+      _submitTransaction(
+        original: original,
+        deleting: true,
+        type: original.type,
+        amountCents: original.amountCents,
+        category: original.category,
+        description: original.description,
+        occurredAt: original.occurredAt,
+      ).then(
+        (result) => _sameSession
+            ? result
+            : const TransactionSubmissionResult(
+                TransactionSubmissionStatus.sessionInvalidated,
+              ),
+      );
+
+  void _validateOriginal(FinancialTransaction original) {
+    if (original.userId != expectedUserId) {
+      throw const DataFailure(
+        DataFailureKind.permissionDenied,
+        'Registro de outro usuário.',
+      );
+    }
+    final stored = transactionById(original.id);
+    if (stored == null) {
+      throw const DataFailure(
+        DataFailureKind.notFound,
+        'Transação não encontrada. Atualize os dados.',
+      );
+    }
+    if (!_sameContent(stored, original)) {
+      throw const DataFailure(
+        DataFailureKind.invalidData,
+        'A transação mudou. Atualize os dados e abra a edição novamente.',
+      );
+    }
+  }
+
+  Future<TransactionSubmissionResult> updateTransaction({
+    required FinancialTransaction original,
+    required TransactionType type,
+    required int amountCents,
+    required Category category,
+    required String description,
+    required DateTime occurredAt,
+  }) =>
+      _submitTransaction(
+        original: original,
+        type: type,
+        amountCents: amountCents,
+        category: category,
+        description: description,
+        occurredAt: occurredAt,
+      ).then(
+        (result) => _sameSession
+            ? result
+            : const TransactionSubmissionResult(
+                TransactionSubmissionStatus.sessionInvalidated,
+              ),
+      );
+
+  Future<TransactionSubmissionResult> _submitTransaction({
+    FinancialTransaction? original,
+    bool deleting = false,
     required TransactionType type,
     required int amountCents,
     required Category category,
@@ -303,6 +436,7 @@ final class FinancialController extends ChangeNotifier {
       );
     }
     try {
+      if (original != null) _validateOriginal(original);
       TransactionValidation.check(
         type: type,
         amountCents: amountCents,
@@ -310,13 +444,15 @@ final class FinancialController extends ChangeNotifier {
         description: description,
         occurredAt: occurredAt,
       );
-    } catch (_) {
-      return const TransactionSubmissionResult(
+    } catch (error) {
+      return TransactionSubmissionResult(
         TransactionSubmissionStatus.failed,
-        failure: DataFailure(
-          DataFailureKind.invalidData,
-          'Confira os campos da transação.',
-        ),
+        failure: error is DataFailure
+            ? error
+            : const DataFailure(
+                DataFailureKind.invalidData,
+                'Confira os campos da transação.',
+              ),
       );
     }
     final version = ++_submissionVersion;
@@ -326,6 +462,15 @@ final class FinancialController extends ChangeNotifier {
     notifyListeners();
     bool current() => _sameSession && _submissionVersion == version;
     String? confirmedId;
+    final expected = deleting
+        ? null
+        : original?.copyWith(
+            type: type,
+            amountCents: amountCents,
+            category: category,
+            description: description,
+            occurredAt: occurredAt,
+          );
     try {
       // Nenhuma leitura antiga pode substituir a recarga posterior ao commit.
       final previousRead = _inFlight;
@@ -335,14 +480,24 @@ final class FinancialController extends ChangeNotifier {
           TransactionSubmissionStatus.sessionInvalidated,
         );
       }
-      confirmedId = await _repository.create(
-        type: type,
-        amountCents: amountCents,
-        category: category,
-        description: description.trim(),
-        occurredAt: occurredAt,
-        expectedUserId: expectedUserId,
-      );
+      if (original != null) {
+        _validateOriginal(original);
+        if (deleting) {
+          await _repository.delete(original.id, expectedUserId: expectedUserId);
+        } else {
+          await _repository.update(expected!, expectedUserId: expectedUserId);
+        }
+        confirmedId = original.id;
+      } else {
+        confirmedId = await _repository.create(
+          type: type,
+          amountCents: amountCents,
+          category: category,
+          description: description.trim(),
+          occurredAt: occurredAt,
+          expectedUserId: expectedUserId,
+        );
+      }
       if (!current()) {
         return const TransactionSubmissionResult(
           TransactionSubmissionStatus.sessionInvalidated,
@@ -351,7 +506,13 @@ final class FinancialController extends ChangeNotifier {
       if (confirmedId.trim().isEmpty) {
         throw const FormatException('Identificador não confirmado');
       }
-      _pendingCreatedIds.add(confirmedId);
+      if (deleting) {
+        _pendingDeletedIds.add(confirmedId);
+      } else if (expected != null) {
+        _pendingUpdates[confirmedId] = expected;
+      } else {
+        _pendingCreatedIds.add(confirmedId);
+      }
       await _startRefresh();
       if (!current()) {
         return const TransactionSubmissionResult(
@@ -364,6 +525,7 @@ final class FinancialController extends ChangeNotifier {
             : TransactionSubmissionStatus.confirmed,
         id: confirmedId,
         failure: _failure,
+        expectedTransaction: expected,
       );
     } catch (error) {
       if (!current()) {
@@ -384,12 +546,18 @@ final class FinancialController extends ChangeNotifier {
           confirmedId != null ||
           failure.kind == DataFailureKind.unavailable ||
           failure.kind == DataFailureKind.unknown;
-      if (uncertain) _requiresReconciliation = true;
+      if (uncertain) {
+        _requiresReconciliation = true;
+        _failure = failure;
+        _phase = FinancialPhase.error;
+      }
       return TransactionSubmissionResult(
         uncertain
             ? TransactionSubmissionStatus.uncertain
             : TransactionSubmissionStatus.failed,
         failure: failure,
+        id: original?.id,
+        expectedTransaction: expected,
       );
     } finally {
       _submitting = false;
@@ -452,6 +620,10 @@ final class FinancialController extends ChangeNotifier {
   }
 
   static bool _sameContent(FinancialTransaction a, FinancialTransaction b) =>
+      _sameUpdate(a, b) && a.updatedAt == b.updatedAt;
+
+  // updatedAt é auditoria do servidor, não o valor antecipado pelo formulário.
+  static bool _sameUpdate(FinancialTransaction a, FinancialTransaction b) =>
       a.id == b.id &&
       a.userId == b.userId &&
       a.type == b.type &&
@@ -459,8 +631,7 @@ final class FinancialController extends ChangeNotifier {
       a.category == b.category &&
       a.description == b.description &&
       a.occurredAt == b.occurredAt &&
-      a.createdAt == b.createdAt &&
-      a.updatedAt == b.updatedAt;
+      a.createdAt == b.createdAt;
 
   @override
   void dispose() {
@@ -469,6 +640,8 @@ final class FinancialController extends ChangeNotifier {
     _generation++;
     _submissionVersion++;
     _pendingCreatedIds.clear();
+    _pendingUpdates.clear();
+    _pendingDeletedIds.clear();
     _phase = FinancialPhase.sessionInvalidated;
     _summary = null;
     _transactions = const [];

@@ -20,6 +20,11 @@ abstract interface class TransactionRepository {
     required DateTime occurredAt,
     String? expectedUserId,
   });
-  Future<void> update(FinancialTransaction transaction);
-  Future<void> delete(String id);
+
+  /// A identidade esperada é somente uma barreira; proprietário vem da sessão.
+  Future<void> update(
+    FinancialTransaction transaction, {
+    String? expectedUserId,
+  });
+  Future<void> delete(String id, {String? expectedUserId});
 }

@@ -1,5 +1,223 @@
 # BolsoZen — Progresso
 
+## M6 encerrado com ressalvas — aceite manual do usuário
+
+Usuário aprovou funcionamento e testes manuais necessários. **M6.6 dispensado, não executado.** M6 encerrado com ressalvas; detalhes em [M6_HOMOLOGACAO.md](M6_HOMOLOGACAO.md). Cadastro existente, edição/exclusão com confirmação, busca por descrição/categoria, filtros combinados, agrupamento, ocultação somente do saldo e recentes sincronizados entregues. Preservadas segurança por UID/expectedUserId, precisão monetária, serialização e reconciliação sem replay automático de mutações.
+
+Evidência anterior preservada: **656 testes Flutter aprovados**, analyzer com **52 informes de depreciação**, zero erros/warnings. Nenhuma bateria repetida neste encerramento. Capturas e limites dos testes com fakes permanecem nos relatórios M6.2–M6.5; aceite manual não substitui evidência técnica ainda ausente. Registros abaixo são históricos.
+
+### Ressalvas acumuladas transferidas ao M9
+
+Preservados os backlogs M4/M5 e respectivas homologações: persistência autenticada após reinício real do Android quando não comprovada; bateria Chrome interrompida por OOM; validação de teclado nativo e TalkBack; integração adicional Firebase Auth/Firestore locais; validação Android/Web dos fluxos CRUD, condições de falha/reconciliação de conexão e revisão dos 52 informes do analyzer. Não declarar testes nativos/remotos não executados ou reabrir obrigatoriamente homologações dispensadas nesta tarefa. Novas operações remotas continuam dependendo de autorização específica.
+
+Autorizado commit local exclusivamente dos arquivos M6/documentação, sem o JSON redundante. Planejamento M7 será elaborado após esse commit; nenhuma implementação M7 autorizada. Sem push/deploy, contas/dados remotos, regras/índices, Gradle ou dependências.
+
+## M6.5 — Ocultação de saldo e revisão dos recentes, aguardando revisão
+
+M6.4 aprovado tecnicamente (638 testes/50 informes), autorizado exclusivamente M6.5. **Não iniciar M6.6** sem nova autorização. Mantidos todos os fluxos aprovados e controles ampliados do Histórico. Registros abaixo são históricos.
+
+### Arquivos desta etapa
+
+- `lib/presentation/widgets/balance_card.dart`: estado controlado por visible/onToggleVisibility; máscara ou valor, semântica explícita e olho aberto/fechado com tooltip acessível. Mantido estilo TEL-04.
+- `lib/presentation/screens/dashboard/dashboard_screen.dart`: bool em memória, inicialmente visível; preservado entre abas/refresh; reset por invalidação ou substituição de controller/UID e descarte normal da árvore privada.
+- Novo `test/presentation/balance_privacy_test.dart`: testes de apresentação real com SessionGate/MainShell e repositório fake local; privacidade, ciclo de vida, recentes após CRUD, falhas/recarga e responsividade.
+- `test/presentation/financial_screens_test.dart`: asserção antiga do olho indisponível alterada para ação real; demais verificações/fixtures preservadas.
+- Novo `test/visual/m6_balance_capture.dart`, evidências em `docs/evidencias/m6-5/` e relatório `docs/M6_5_VALIDACAO_VISUAL.md`; atualizados este progresso e PLANO_M6.md.
+
+### Privacidade e ciclo de vida
+
+Ocultação somente do Saldo total: máscara •••••• e label Saldo oculto substituem o valor renderizado e sua semântica; o botão anuncia Mostrar saldo/Ocultar saldo. Não há segunda label com o valor oculto. Demais valores continuam visíveis conforme escopo aprovado. Nenhuma alteração financeira, consulta, persistência de preferência ou estado global. A preferência vive no Dashboard mantido pelo IndexedStack; não é compartilhada com outra sessão ou UID. Logout/alteração de conta remove a árvore privada e seus dados como antes.
+
+### Revisão dos recentes e sincronização
+
+FinancialProjection.recent permanece com um item, sem mudança na implementação. Usa o histórico completo confirmado e ordenado pelo domínio, não faz nova consulta. Testes verificam criação, edição de descrição/categoria/tipo/valor, alteração de data reordenando a lista e exclusão revelando o próximo registro, sem duplicação. FinancialController/cálculos/repositórios não precisaram de alteração.
+
+Na confirmação de mutação com recarga falha, o recente anterior continua explicitamente desatualizado; alternar olho não limpa erro/stale/pendências. Retry permanece somente leitura, sem repetir create/update/delete. Logout durante leitura descarta resposta atrasada e não recupera valor/recentes. Erro inicial não apresenta saldo zero definitivo nem registros fictícios.
+
+### Validação final M6.5
+
+| Verificação | Resultado real |
+|---|---|
+| dart format . | Exit 0; 116 arquivos, um formatado na última execução (runner visual) |
+| flutter analyze | Exit 1 pelos **52 informes de depreciação**, zero erros/warnings |
+| flutter test --concurrency=1 | Exit 0; **656 aprovados**, preservados os 638 anteriores + 18 novos |
+| git diff --check | Exit 0; somente avisos locais LF/CRLF, sem erros de whitespace |
+| Captura opt-in | Um teste separado aprovado; oito PNGs, sem Firebase remoto ou OOM |
+
+Dois informes líquidos novos: imports Material oficiais no teste e runner novos. Nenhuma supressão ou dependência adicionada; diagnóstico de estilo do teste corrigido. A execução inicial dos testes novos exigiu corrigir imports e o descarte do handle semântico do próprio teste, além de verificar label mesclada/tooltip nativo corretamente. A suíte final passou sem falhas.
+
+Cobertura: visibilidade inicial, máscara/reexibição/alternância sem leituras e sem alterar summary; texto/semântica sem valor oculto; demais indicadores e Histórico visíveis; abas/refresh; reset no logout/UID; vazio/erro; recentes após CRUD e mudança de data; três casos de mutação confirmada com refresh falho e retry só leitura; logout durante leitura/resposta atrasada; 360/390/412 dp, texto 1×/2×. Capturas reais do renderer com Roboto/fixtures identificadas, inspecionadas contra TEL-04. No texto ampliado, o valor visível pode quebrar linha e o card acompanha o conteúdo; a máscara é mais curta. A fixture repõe a rolagem no topo para comparar enquadramentos; não muda o aplicativo. Detalhes em M6_5_VALIDACAO_VISUAL.md.
+
+### Limitações e próximo passo
+
+Testes usam contratos fake, sem Firebase remoto ou SDK nativo. Capturas usam renderer de testes; homologação manual de TalkBack, teclado/plataformas e ressalvas anteriores permanece no M9. Revisão visual do usuário pendente. Sem novas dependências, alterações de Gradle, regras/índices, dados/contas remotos, staging, commit, push ou deploy. JSON redundante continua preservado fora do Git. Próxima etapa possível: M6.6, somente após revisão e autorização.
+
+## M6.4 — Busca e filtros do Histórico, aguardando revisão
+
+M6.3 aprovado pelo usuário (607 testes, 47 informes). Implementado exclusivamente M6.4, incluindo ajuste solicitado de controles maiores. **Não iniciar M6.5**. Registros anteriores abaixo são históricos; nenhuma aprovação visual automática.
+
+### Arquivos desta etapa
+
+- `lib/presentation/screens/transactions/transactions_screen.dart`: estado local de pesquisa/tipo/categoria; integração do modal, limpeza e distinção de vazios, listener de invalidação, timer local de dia e retomada do aplicativo. IndexedStack existente conserva filtros entre abas; descarte da árvore privada/UID elimina estado e respostas de modal antigo.
+- `lib/presentation/services/financial_projection.dart`: filterHistory puro sobre todo o histórico confirmado, coleção imutável e ordem original preservada. Pesquisa parcial por descrição OU categoria, ignorando caixa, espaços nas extremidades e acentos portugueses/marcas combinantes.
+- Novos `lib/presentation/widgets/history_filters.dart` e `history_category_dialog.dart`: pesquisa real/limpeza, três chips com seleção semântica, categorias oficiais compatíveis, rascunho Aplicar/Cancelar e ação explícita Limpar filtros. Removido `unavailable_history_filters.dart`, agora sem uso.
+- Novos `test/presentation/history_filter_projection_test.dart` e `history_filters_test.dart`; testes antigos `financial_screens_test.dart`, `main_shell_test.dart` e helper `transaction_edit_screens_test.dart` adaptados para distinguir rolagem vertical da lista da rolagem horizontal do novo campo. Asserção de ausência de campo passa a verificar a busca real; proibição de ellipsis continua nos textos financeiros, não no hint nativo do campo.
+- Novo runner opt-in `test/visual/m6_history_capture.dart`, PNGs em `docs/evidencias/m6-4/`, relatório `docs/M6_4_VALIDACAO_VISUAL.md`, este progresso e `docs/PLANO_M6.md`.
+
+### Comportamento e segurança
+
+Combinação tipo E categoria E busca, com descrição OU categoria dentro da busca. Chip Todas remove somente tipo; mudança de tipo limpa categoria incompatível; X remove somente texto; opção Todas do campo Categoria + Aplicar remove somente categoria; Limpar filtros remove os três critérios explicitamente. Cancelar não altera filtros ativos. Modal mantém navegação/foco Material e devolve foco ao ajuste.
+
+Sem novas leituras por tecla, chip, categoria, mudança de data ou alternância de aba. Filtros cobrem páginas completas (teste com 201 registros), não modificam transações nem FinancialSummary/saldo. Edição e exclusão confirmadas refletem automaticamente na projeção filtrada. Hoje/Ontem usam dias locais e atualizam à meia-noite/retomada; grupos são gerados depois dos filtros, sem cabeçalhos vazios. Erro e stale continuam explícitos, sem virar saldo zero ou mensagem enganosa de ausência. Histórico realmente vazio mantém orientação e acesso real a adicionar.
+
+Controles proporcionais com mínimo 48 dp e fonte do tema 14/w600; tune 26 dp/alvo 48×48; pesquisa com altura mínima visual 48 dp. Em texto ampliado, chips quebram em linhas, preservando toque e leitura. Cards, ícones pastéis, títulos/datas e barra inferior existentes preservados. Comparação visual e capturas no relatório específico.
+
+### Limitações
+
+Normalização cobre português/latim básico e marcas combinantes, sem transliteração universal. Filtragem linear local adequada ao MVP, sem busca remota. Testes/fotos utilizam fakes e renderer Flutter; não comprovam teclado nativo/TalkBack, navegador real ou persistência remota. Homologação manual dessas plataformas e ressalvas anteriores permanecem no M9. Revisão visual do usuário pendente. Não houve alteração adicional em FinancialController, domínio monetário, repositórios, MainShell/SessionGate, regras/índices, Gradle ou dependências. Nenhuma operação Firebase remota, staging, commit, push ou deploy. JSON redundante preservado fora do Git.
+
+### Validação final M6.4
+
+| Verificação | Resultado real |
+|---|---|
+| dart format . | Exit 0; 114 arquivos, um formatado na última execução |
+| flutter analyze | Exit 1 por **50 informes de depreciação**, zero erros/warnings |
+| flutter test --concurrency=1 | Exit 0; **638 aprovados**, preservando os 607 anteriores e acrescentando 31 |
+| Captura opt-in final | Exit 0; um teste separado aprovado, oito PNGs pelo renderer Flutter, sem Firebase/OOM |
+| git diff --check | Exit 0; avisos locais LF/CRLF não são erros de whitespace |
+
+Os três informes líquidos adicionais vêm de imports Material nos novos widgets/testes/runner (quatro imports novos, um arquivo antigo removido). Corrigidos diagnósticos novos de estilo, import desnecessário e hasFlag depreciado, sem suprimir regras ou instalar material_ui. Na execução inicial, um teste antigo de rolagem falhou por encontrar também o Scrollable horizontal da busca; corrigido o seletor para eixo vertical e repetida a suíte completa. A simulação inicial de lifecycle do teste foi ajustada para transições Flutter válidas. Não houve OOM.
+
+Cobertura nova: busca parcial/acentos/Unicode/caixa/trim; combinação e limpeza independente; modal cancelar/aplicar e foco; 201 registros/páginas completas sem consultas extras; ordenação e cabeçalhos de virada de ano/dia; dados stale/erro/vazio; edição/exclusão; alternância de abas, logout e troca de UID; 360/390/412 dp com texto 1× e 2×, sem overflow, contraste/rótulos/alvos de toque automatizados.
+
+Próxima etapa possível: M6.5, somente após aprovação desta entrega e nova autorização.
+
+## M6.3 — Exclusão com confirmação, aguardando revisão
+
+M6.2 aprovado pelo usuário, baseline 561 testes/44 informes. Implementado exclusivamente M6.3; **não iniciar M6.4** sem nova autorização. Preservados edição, criação, navegação privada e identidade visual aprovadas. Sem busca/filtros, ocultação ou recursos dos marcos posteriores.
+
+### Arquivos desta etapa
+
+- `lib/presentation/controllers/financial_controller.dart`: deleteTransaction sobre original do snapshot, trava/versionamento compartilhados com create/update, expectedUserId e verificação de ausência do ID antes de publicar recarga; pendingDeletedIds e confirmsDeletion para leitura sem replay.
+- `lib/presentation/widgets/transaction_actions_sheet.dart`: enum de ação tipado para Editar/Excluir e lixeira error; menu existente reutilizado, sem exclusão automática.
+- Novo `lib/presentation/widgets/delete_transaction_dialog.dart`: AlertDialog com descrição/valor, aviso irreversível, Cancelar/Excluir, progresso e bloqueio de confirmação repetida; fechamento durante envio não cancela requisição e retorno tardio não altera widget descartado. Retry somente de leitura para refresh pendente/incerteza/notFound.
+- `lib/app/main_shell.dart`: seleção tipada e diálogo no Navigator privado com useRootNavigator=false, identidade revalidada antes da abertura; preserva uma instância financeira e descarte pelo SessionGate.
+- `transaction_form_screen.dart`: apenas mensagem genérica de alteração confirmada pendente para não chamar uma exclusão de movimentação salva; nenhuma mudança de campos/layout. A trava impede novo lançamento até leitura de reconciliação.
+- `test/presentation/financial_test_fakes.dart`: delete fake instrumentado, com UID e notFound. Novos `transaction_delete_test.dart` e `transaction_delete_screens_test.dart`.
+- `transaction_edit_screens_test.dart` e `test/visual/m6_edit_capture.dart`: asserção do menu atualizada para Excluir agora real; casos de edição anteriores preservados. PNGs históricos M6.2 não sobrescritos.
+- Novo runner opt-in `test/visual/m6_delete_capture.dart`; documentação PLANO_M6.md, este progresso e relatório M6_3_VALIDACAO_VISUAL.md; capturas isoladas em docs/evidencias/m6-3.
+
+Repositórios/contratos, FirebaseSession, domínio/Money/FinancialCalculator, TransactionTile/TransactionsScreen, SessionGate, regras/índices, Gradle e dependências não receberam novas alterações M6.3. Diffs M6.1/M6.2 ainda presentes contra o commit M5 são preexistentes e foram preservados.
+
+### Estados e segurança
+
+Só o botão Excluir do diálogo dispara a operação. Cancelar/Voltar antes disso não escreve. Controller exige UID/ID/modelo confirmado e revalida após await; não aceita ID arbitrário ou conteúdo alterado desde seleção. Todas as mutações compartilham a mesma trava. Dados financeiros antigos continuam até commit e recarga completa confirmada, sem atualização otimista.
+
+Commit confirmado com leitura falha mostra Transação excluída e mantém o snapshot explicitamente stale; botão Atualizar dados não chama delete. Resultado incerto preserva ID original para conferência por leitura, não prova cancelamento e não repete automaticamente. notFound é tratado como erro, não como sucesso automático após consulta. Fechar durante operação apenas descarta o diálogo; controller conclui/registre pendência sem reabrir UI. Troca de conta/logout destrói pilha privada inclusive diálogo, e respostas antigas não publicam dados nem navegam.
+
+Testes são locais, com fakes; não comprovam persistência/SDK/regras em servidor real. Não foram criados/excluídos usuários ou documentos remotos. Operação já enviada não é garantidamente cancelada ao sair; acesso/caminho nunca é redirecionado para B. Conflitos de múltiplos dispositivos e ressalvas nativas M9 continuam documentados. Sem build pesado, staging, commit, push ou deploy; JSON redundante preservado fora do Git.
+
+### Validação final M6.3
+
+| Verificação | Resultado real |
+|---|---|
+| dart format . | Exit 0; 110 arquivos, um teste formatado na execução final |
+| flutter analyze | Exit 1 pelos **47 informes de depreciação**, zero erros/warnings |
+| flutter test --concurrency=1 | Exit 0; **607 aprovados**, 561 anteriores preservados + 46 novos |
+| Captura opt-in | Exit 0; um teste separado aprovado, oito PNGs e manifesto, sem OOM |
+| git diff --check | Exit 0, sem erros; avisos LF/CRLF informativos |
+
+Novos testes: 21 de controller e 25 de widgets, cobrindo CA-07 saldo 750/novembro zero/outubro 250; receitas/despesas/último registro; categorias/recentes; original inválido/UID/ID; trava create/update/delete; nenhuma remoção otimista; confirmação da ausência do ID; falhas definidas/recarga/incerteza/notFound e retry só de leitura; fechamento/cancelamento/toques repetidos; troca de UID/logout/dispose; 360/390/412 com texto 1/2, descrição/valor extensos, rótulos/alvos/contraste. Novo lançamento durante pendência de exclusão não grava e informa alteração confirmada aguardando atualização.
+
+Analyzer manteve 44 informes anteriores e acrescentou três imports Material oficiais (delete_transaction_dialog.dart, transaction_delete_screens_test.dart, m6_delete_capture.dart). Sete informes novos de estilo foram corrigidos antes da execução final; nenhum diagnóstico ocultado nem dependência adicionada. Suítes direcionadas controller/widget passaram, seguidas da suíte completa. Asserções antigas de menu somente Editar foram adaptadas à autorização explícita M6.3, sem remover testes.
+
+Oito screenshots abertas/inspecionadas, dimensões PNG conferidas; menu e confirmação em 390, confirmação 360/412, texto 2 e casos de valor/descrição extensos. Nenhum overflow identificado nas capturas finais. Diálogo é complemento Material da jornada J-05, não desenhado na prancha; cores/Roboto/raios e TEL-04/TEL-06 preservados. Evidências em [M6_3_VALIDACAO_VISUAL.md](M6_3_VALIDACAO_VISUAL.md). Não declarar pixel-perfect, aprovação visual automática ou execução Android/Chrome com base no renderer de testes.
+
+## M6.2 — Edição de transações, aguardando revisão
+
+M6.1 aprovado pelo usuário, baseline 515 testes/41 informes. Implementado exclusivamente M6.2. **Não iniciar M6.3 sem autorização.** Sem exclusão na UI, busca/filtros, ocultação ou módulos posteriores.
+
+### Arquivos M6.2
+
+- `lib/presentation/controllers/financial_controller.dart`: updateTransaction com original confirmado, UID fixo, validações e preservação do modelo; submissão compartilhada com create, pendingUpdates para verificar a recarga e confirmação por leitura dos campos esperados. Resultado incerto passa a sinalizar erro/stale no estado compartilhado, inclusive ao retornar à aba, sem esconder a possibilidade de escrita já realizada.
+- `lib/presentation/screens/transactions/transaction_form_screen.dart`: mesmo formulário em criação/edição, títulos/botões adequados, preenchimento por Money.formatCents, data exata conservada sem edição explícita, loading/erros/reconciliação/notFound sem reenvio de update ou fallback create.
+- Novo `lib/presentation/widgets/transaction_actions_sheet.dart`: bottom sheet discreto com transação selecionada e única ação Editar. Cancelar pelo Voltar/fechar não grava; não existe Excluir.
+- `lib/presentation/widgets/transaction_tile.dart`: callback/semântica de toque e InkWell com raio existente; composição, fontes, cores e ícones preservados. `transactions_screen.dart` recebe callback para ações somente sobre registros editáveis do snapshot.
+- `lib/app/main_shell.dart`: menu/formulário no Navigator privado, identidade revalidada após fechar menu, mesma instância financeira e trava de abertura. Sem outra carga ao abrir/retornar.
+- `test/presentation/financial_test_fakes.dart`: update fake com UID, registro existente e instrumentação para falhas; sem uso na produção. Novos `transaction_update_test.dart` e `transaction_edit_screens_test.dart`.
+- Novo runner opt-in `test/visual/m6_edit_capture.dart`, evidências em docs/evidencias/m6-2 e relatório M6_2_VALIDACAO_VISUAL.md. Atualizados este progresso e PLANO_M6.md.
+
+Repositórios/contratos/guardas implementados no M6.1 foram reutilizados sem nova alteração nesta etapa; diffs deles contra o commit M5 continuam sendo trabalho preexistente preservado. Não modificados domínio monetário, modelo, regras/índices, SessionGate, autenticação, Gradle ou dependências. JSON redundante continua não rastreado; nenhum staging/commit/push/deploy.
+
+### Fluxo e limites
+
+Histórico → item real → menu somente Editar → formulário TEL-05 preenchido → validação → update com expectedUserId → carga completa → verificar ID/campos → retorno à origem. Sem atualização otimista, novo ID ou create na edição. Todos os indicadores/recentes continuam derivados do FinancialCalculator e do snapshot comum.
+
+Commit confirmado com refresh falho mantém aviso Edição salva e permite somente leitura; resultado incerto não declara falha definitiva/sucesso e bloqueia o rascunho até conferência. Leitura compatível pode confirmar os campos esperados e retornar; conteúdo diferente deixa o rascunho sem reenvio, orientando retornar/conferir. Documento ausente oferece atualização e não é recriado. UI não é liberada para outro UID; menu e formulário são descartados pela árvore do gate no logout/troca, e respostas atrasadas são ignoradas.
+
+Limitações mantidas: teste com fake não comprova persistência/SDK nativo/regras no servidor; nenhum teste remoto ou emulador iniciado nesta etapa. Não existe controle transacional de conflito entre edições de dispositivos além das guardas e validação de snapshot já descritas no plano. Timeout não cancela escrita já submetida. Sessão/IME/TalkBack/execução nativa continuam sujeitos às ressalvas M9, sem reabrir M5.6 dispensado.
+
+### Validações M6.2 e evidências
+
+| Verificação | Resultado real |
+|---|---|
+| dart format . | Exit 0; 106 arquivos, zero alterados na execução final |
+| flutter analyze | Exit 1 pelos **44 informes de depreciação**, zero erros/warnings |
+| flutter test --concurrency=1 | Exit 0; **561 aprovados**, preservando 515 anteriores + 46 novos |
+| Captura opt-in M6.2 | Exit 0; um teste separado aprovado e oito PNGs, sem OOM |
+| git diff --check | Exit 0, sem erros; avisos LF/CRLF locais informativos |
+
+Novos testes: 21 de controller e 25 de widgets, com CA-07, centavos/faixa segura, campos/preenchimento, data original e alteração explícita, snapshot/UID, trava create/update, menu apenas Editar/fechamento, cancelamento, sucesso/retorno/recente, falha definida/recarga/incerteza/notFound, leitura sem replay, troca de sessão/dispose e 360/390/412 dp com texto 1/2 e teclado simulado. Regressores M4/M5 e testes M6.1 preservados. Analyzer: três imports Material oficiais novos (transaction_actions_sheet, transaction_edit_screens_test e m6_edit_capture), somados ao baseline 41; dois informes de estilo corrigidos antes da validação final, sem supressão.
+
+Oito screenshots inspecionadas, dimensões dos PNGs conferidas: menu e edição de receita/despesa em 390, despesa 360/412, menu/edição em texto 2 a 360 e caso com inset de teclado. Comparadas com TEL-05/TEL-06, sem redesenho ou overflow identificado. Evidências e limites em [M6_2_VALIDACAO_VISUAL.md](M6_2_VALIDACAO_VISUAL.md). Menu complementar usa padrões Material; não existe desenho específico dele na prancha. Não equivalem a execução Android/Chrome, teclado nativo ou aceite visual automático.
+
+Primeiras execuções dos testes de tela falharam na rolagem/localização e toque central de cards extensos em ListView lazy. Corrigido somente o helper para encontrar a linha e tocar sua parte visível; não ocultadas falhas nem alterado layout aprovado para passar testes. Logs finais locais em build/m6-2-*.log; nenhum log/cache/build versionado.
+
+## M6.1 — Barreira de identidade em edição/exclusão, entregue para revisão
+
+Planejamento M6 aprovado pelo usuário, incluindo as seis decisões registradas em PLANO_M6.md. Autorização exclusiva do M6.1; **não iniciar M6.2** sem aprovação. M5 permanece encerrado no commit `5ce9c6e8fafa222133c204de62d8d27c1e555f8f`.
+
+### Arquivos alterados e decisões
+
+- `lib/domain/repositories/transaction_repository.dart`: expectedUserId opcional em update/delete, compatível com chamadas sem o argumento, documentado como verificação e não seleção de proprietário.
+- `lib/data/repositories/firestore_transaction_repository.dart`: verifica identidade na entrada antes de qualquer referência/transação; preserva verificação no callback, acrescenta conferência após get e mantém guardas antes da escrita e após confirmação. Caminho sempre usa UID do FirebaseSession; sem persistência alternativa ou alteração de auditoria.
+- `test/data/transaction_repository_session_test.dart`: transporte local estendido com documentos/snapshots, update/delete enfileirados, pausas de leitura/confirmação, retry transacional simulado e falhas tipadas. Não interpreta enfileiramento do fake como prova de commit remoto.
+- `test/presentation/financial_test_fakes.dart`: apenas assinaturas de update/delete atualizadas para implementar o contrato; sem implementação antecipada de edição/exclusão na apresentação.
+- `docs/PLANO_M6.md` e este progresso: aprovação do planejamento, escopo entregue e limitações registrados. Alterações documentais anteriores ao M6.1 preservadas.
+
+FinancialController, FirebaseSession, FinancialTransaction, Money/BigInt, calculadora, UI/rotas, regras/índices, Gradle e dependências não foram alterados. Regras/índices existentes revisados somente por leitura: isolamento por UID, proprietário/criação imutáveis e índice da consulta paginada preservados.
+
+### Testes e alcance
+
+Testes unitários com Auth fake, referências reais do SDK Dart e transporte de mensagens interceptado no processo; sem plugin nativo/rede, emuladores ou Firebase remoto. Cobertura nova: UID correto e divergente, nenhuma operação antes de identidade compatível, sessão B já ativa com mesmo ID, logout/troca antes/durante callback/get/retry, troca após enfileirar, documento ausente e proprietário inválido, unavailable/permission-denied/deadline-exceeded, chamadas antigas em B, proprietário e createdAt imutáveis e valores no/acima do limite seguro. Mantidos todos os casos anteriores.
+
+A primeira execução direcionada não compilou por assinatura estreita do fake Transaction.update (Map<String,dynamic> em vez de Map<Object,Object?> exigido pelo SDK). Corrigido somente o fake; execução seguinte aprovou 52 testes direcionados. Acrescentados depois dois cenários para documento ausente durante troca de sessão, incluídos na suíte final. Logs locais ignorados em build/m6-1-*.log; sem senhas/tokens ou dados reais.
+
+| Validação final M6.1 | Resultado real |
+|---|---|
+| dart format . | Exit 0, 102 arquivos examinados; um teste formatado na última execução |
+| flutter analyze | Exit 1 pelos **41 informes de depreciação** conhecidos; zero erros/warnings, nenhum diagnóstico novo |
+| flutter test --concurrency=1 | Exit 0, **515 aprovados**, 475 anteriores + 40 novos; inclui os 54 casos do arquivo de sessão |
+| git diff --check | Exit 0, sem erros; avisos LF/CRLF locais informativos |
+
+Sem emuladores/servidor nesta execução. Os testes não substituem validação Firestore/FlutterFire real; verificam execução do repositório e erros por transporte interceptado. Não foram reexecutados testes remotos nem bateria de Security Rules.
+
+### Limitações e próxima etapa
+
+Chamadas antigas sem expectedUserId operam na sessão corrente; futuros consumidores M6.2/M6.3 devem sempre passar UID esperado. Uma operação já submetida ao usuário A não é garantidamente cancelada por logout; guardas impedem redirecionar para B e não retornam sucesso à sessão incompatível. Erro incerto conserva os dados/ID de entrada e DataFailure para reconciliação por leitura, sem replay automático do repositório. A simulação local não valida rede, persistência ou aplicação das Security Rules por servidor; regras não modificadas nem reexecutadas nesta etapa.
+
+Próxima entrega possível: M6.2, edição pelo controller/formulário/menu, somente após revisão e nova autorização. Sem telas, menus, busca/filtros, ocultação, dados remotos, build pesado, deploy, staging, commit ou push nesta execução. JSON redundante permanece preservado e fora do Git.
+
+## Pós-commit M5 — Planejamento M6 preparado, não implementado
+
+Commit local M5 concluído: **`5ce9c6e8fafa222133c204de62d8d27c1e555f8f`**, mensagem `feat: implementar dashboard e transacoes essenciais`, **90 arquivos**, branch main. Staging conferido contra manifesto explícito e `git diff --cached --check` aprovado; `git diff --check` também aprovado. Sem push/deploy. Imediatamente após o commit, somente `assets/illustrations/google-services.json` permaneceu não rastreado, preservado sem exclusão.
+
+Após o commit foram relidos AGENTS.md, plano/progresso, documentos 01–05, protótipo e código financeiro. Criado **[PLANO_M6.md](PLANO_M6.md)**, exclusivamente documental. Esta anotação e o plano M6 são posteriores e **não estão no commit M5**; aguardar revisão antes de registrar ou implementar o próximo marco.
+
+M6 proposto: M6.1 barreira expectedUserId compatível para update/delete; M6.2 edição reutilizando formulário; M6.3 exclusão confirmada; M6.4 busca/filtros locais por tipo/categoria e organização; M6.5 olho do saldo e regressão de recentes; M6.6 verificação dirigida/evidências. Cada subetapa depende de autorização. update/delete já existem no repositório; proteção adicional é importante especialmente para delete por ID após troca de UID. Busca/chips/tune/olho ainda indisponíveis têm destino M6; sino, meta e Ver mais não se tornam novos recursos deste marco.
+
+Planejamento preserva FinancialController único, precisão Money/BigInt, carga completa e recálculo do domínio, sessão/rotas e visual aprovados. Decisões para revisão: extensão de contrato, menu/diálogo e formulário, filtros combinados e privacidade somente do saldo em memória. Sem orçamento, relatórios, Google Login ou BolsoZen Bot. Ressalvas M4/M5 continuam transferidas ao M9; nenhuma nova homologação, operação remota ou código M6 nesta tarefa.
+
 ## M5 — Encerrado por aprovação manual do usuário, com ressalvas
 
 Usuário testou o aplicativo financeiro integrado e aprovou seu funcionamento. **M5 encerrado; homologação extensa M5.6 dispensada por decisão expressa do usuário.** Dispensa não significa execução ou aprovação de testes inexistentes. Registros anteriores de revisão pendente são históricos.

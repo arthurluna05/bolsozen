@@ -145,7 +145,7 @@ void main() {
     expect(find.text('Alimentação'), findsOneWidget);
     expect(find.text('Hoje, 5 de nov. de 2026'), findsOneWidget);
     expect(find.byType(ListView), findsOneWidget);
-    expect(find.byType(TextField), findsNothing);
+    expect(find.byKey(const ValueKey('history-search')), findsOneWidget);
     expect(find.byType(FilterChip), findsNothing);
     expect(
       tester
@@ -161,7 +161,14 @@ void main() {
           .onTap,
       isNull,
     );
-    await tester.scrollUntilVisible(find.byKey(const ValueKey('leisure')), 150);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('leisure')),
+      150,
+      scrollable: find.byWidgetPredicate(
+        (widget) =>
+            widget is Scrollable && widget.axisDirection == AxisDirection.down,
+      ),
+    );
     expect(find.text('Lazer — teste visual'), findsOneWidget);
   });
 
@@ -298,7 +305,7 @@ void main() {
               ),
             )
             .onPressed,
-        isNull,
+        isNotNull,
       );
       expect(
         tester
@@ -454,8 +461,12 @@ void main() {
             );
             expect(amount, findsWidgets);
             expect(
-              find
-                  .byType(Text)
+              (list
+                      ? find.descendant(
+                          of: find.byType(TransactionTile),
+                          matching: find.byType(Text),
+                        )
+                      : find.byType(Text))
                   .evaluate()
                   .map((e) => (e.widget as Text).overflow)
                   .contains(TextOverflow.ellipsis),

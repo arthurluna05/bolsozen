@@ -110,7 +110,9 @@ void main() {
       final scroll = tester.state<ScrollableState>(
         find.descendant(
           of: find.byType(ListView),
-          matching: find.byType(Scrollable),
+          matching: find.byWidgetPredicate(
+            (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+          ),
         ),
       );
       final offset = scroll.position.pixels;

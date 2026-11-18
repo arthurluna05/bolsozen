@@ -27,6 +27,10 @@ class FinancialTransactionsFake implements TransactionRepository {
   Future<List<FinancialTransaction>> Function()? read;
   final writes = <TransactionDraftFixture>[];
   Future<String> Function(TransactionDraftFixture draft)? write;
+  final updates = <(FinancialTransaction, String?)>[];
+  Future<void> Function(FinancialTransaction value)? updateCall;
+  final deletes = <(String, String?)>[];
+  Future<void> Function(String id)? deleteCall;
 
   @override
   Future<List<FinancialTransaction>> fetchPage({
@@ -93,11 +97,49 @@ class FinancialTransactionsFake implements TransactionRepository {
   }
 
   @override
-  Future<void> update(FinancialTransaction transaction) =>
-      throw UnsupportedError('Preview somente leitura');
+  Future<void> update(
+    FinancialTransaction transaction, {
+    String? expectedUserId,
+  }) async {
+    updates.add((transaction, expectedUserId));
+    if (expectedUserId != uid || transaction.userId != uid) {
+      throw const DataFailure(
+        DataFailureKind.sessionChanged,
+        'Sessão alterada.',
+      );
+    }
+    if (updateCall != null) return updateCall!(transaction);
+    if (!source.any((t) => t.id == transaction.id)) {
+      throw const DataFailure(
+        DataFailureKind.notFound,
+        'Transação não encontrada.',
+      );
+    }
+    source = FinancialCalculator.summarize(
+      userId: uid,
+      month: FinancialMonth(2026, 11),
+      transactions: source.map((t) => t.id == transaction.id ? transaction : t),
+    ).history;
+  }
+
   @override
-  Future<void> delete(String id) =>
-      throw UnsupportedError('Preview somente leitura');
+  Future<void> delete(String id, {String? expectedUserId}) async {
+    deletes.add((id, expectedUserId));
+    if (expectedUserId != uid) {
+      throw const DataFailure(
+        DataFailureKind.sessionChanged,
+        'Sessão alterada.',
+      );
+    }
+    if (deleteCall != null) return deleteCall!(id);
+    if (!source.any((t) => t.id == id)) {
+      throw const DataFailure(
+        DataFailureKind.notFound,
+        'Transação não encontrada.',
+      );
+    }
+    source = source.where((t) => t.id != id).toList();
+  }
 }
 
 class FinancialTestHarness {

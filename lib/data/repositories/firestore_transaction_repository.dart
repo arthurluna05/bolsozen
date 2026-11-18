@@ -93,8 +93,12 @@ final class FirestoreTransactionRepository implements TransactionRepository {
   });
 
   @override
-  Future<void> update(FinancialTransaction transaction) => guardData(() async {
+  Future<void> update(
+    FinancialTransaction transaction, {
+    String? expectedUserId,
+  }) => guardData(() async {
     final uid = session.uid;
+    if (expectedUserId != null) session.verify(expectedUserId);
     FirebaseSession.validateId(transaction.id);
     if (transaction.userId != uid) {
       throw const DataFailure(
@@ -109,6 +113,7 @@ final class FirestoreTransactionRepository implements TransactionRepository {
     await session.firestore.runTransaction((tx) async {
       session.verify(uid);
       final snapshot = await tx.get(ref);
+      session.verify(uid);
       if (!snapshot.exists) {
         throw const DataFailure(
           DataFailureKind.notFound,
@@ -133,23 +138,26 @@ final class FirestoreTransactionRepository implements TransactionRepository {
   });
 
   @override
-  Future<void> delete(String id) => guardData(() async {
-    final uid = session.uid;
-    FirebaseSession.validateId(id);
-    final ref = session.user(uid).collection('transactions').doc(id);
-    await session.firestore.runTransaction((tx) async {
-      session.verify(uid);
-      final snapshot = await tx.get(ref);
-      if (!snapshot.exists) {
-        throw const DataFailure(
-          DataFailureKind.notFound,
-          'Registro não encontrado.',
-        );
-      }
-      FirestoreMappers.transaction(id, uid, snapshot.data()!);
-      session.verify(uid);
-      tx.delete(ref);
-    });
-    session.verify(uid);
-  });
+  Future<void> delete(String id, {String? expectedUserId}) =>
+      guardData(() async {
+        final uid = session.uid;
+        if (expectedUserId != null) session.verify(expectedUserId);
+        FirebaseSession.validateId(id);
+        final ref = session.user(uid).collection('transactions').doc(id);
+        await session.firestore.runTransaction((tx) async {
+          session.verify(uid);
+          final snapshot = await tx.get(ref);
+          session.verify(uid);
+          if (!snapshot.exists) {
+            throw const DataFailure(
+              DataFailureKind.notFound,
+              'Registro não encontrado.',
+            );
+          }
+          FirestoreMappers.transaction(id, uid, snapshot.data()!);
+          session.verify(uid);
+          tx.delete(ref);
+        });
+        session.verify(uid);
+      });
 }
