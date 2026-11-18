@@ -3,6 +3,7 @@ import '../models/financial_month.dart';
 import '../models/financial_summary.dart';
 import '../models/financial_transaction.dart';
 import '../models/monthly_budget.dart';
+import 'money.dart';
 
 abstract final class FinancialCalculator {
   /// Entrada deve conter o histórico completo carregado, sem páginas faltantes.
@@ -91,10 +92,13 @@ abstract final class FinancialCalculator {
 
   // Não permitir wrap silencioso do inteiro nativo em agregações monetárias.
   static int _sum(Iterable<int> values) {
-    final total = values.fold(
-      BigInt.zero,
-      (sum, value) => sum + BigInt.from(value),
-    );
+    final total = values.fold(BigInt.zero, (sum, value) {
+      if (Money.isJavaScript) Money.requireSafeCents(value);
+      return sum + BigInt.from(value);
+    });
+    if (Money.isJavaScript && total.abs() > BigInt.from(Money.maxSafeCents)) {
+      throw StateError('Total excede a precisão monetária suportada na Web');
+    }
     final result = total.toInt();
     if (BigInt.from(result) != total) {
       throw StateError('Total excede a precisão inteira suportada');

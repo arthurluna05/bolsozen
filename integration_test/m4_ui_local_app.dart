@@ -58,6 +58,7 @@ void main() {
           },
           childBuilder: (_) => AuthExperience(
             createController: dependencies.createSessionController,
+            transactions: dependencies.transactions,
           ),
         ),
       ),

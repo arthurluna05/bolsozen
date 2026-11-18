@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/financial_transaction.dart';
 import '../../domain/repositories/transaction_repository.dart';
+import '../../domain/services/money.dart';
 import '../firebase/data_failure.dart';
 import '../firebase/firebase_session.dart';
 import '../mappers/firestore_mappers.dart';
@@ -15,8 +16,10 @@ final class FirestoreTransactionRepository implements TransactionRepository {
   Future<List<FinancialTransaction>> fetchPage({
     FinancialTransaction? after,
     int limit = 100,
+    String? expectedUserId,
   }) => guardData(() async {
     final uid = session.uid;
+    if (expectedUserId != null) session.verify(expectedUserId);
     if (limit < 1 || limit > 100 || (after != null && after.userId != uid)) {
       throw ArgumentError('Página inválida');
     }
@@ -51,8 +54,11 @@ final class FirestoreTransactionRepository implements TransactionRepository {
     required Category category,
     required String description,
     required DateTime occurredAt,
+    String? expectedUserId,
   }) => guardData(() async {
     final uid = session.uid;
+    if (expectedUserId != null) session.verify(expectedUserId);
+    Money.requireSafeCents(amountCents);
     final ref = session.user(uid).collection('transactions').doc();
     final value = FinancialTransaction(
       id: ref.id,

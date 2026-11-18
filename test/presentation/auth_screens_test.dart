@@ -15,22 +15,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'session_fakes.dart';
+import 'financial_test_fakes.dart';
 
 Future<void> mountAuth(
   WidgetTester tester,
   SessionHarness h, {
   String? uid,
 }) async {
+  final transactions = FinancialTransactionsFake();
+  void syncUid() => transactions.uid = h.controller.user?.uid ?? 'a';
+  h.controller.addListener(syncUid);
   await tester.pumpWidget(
-    BolsoZenApp(home: AuthExperience(createController: () => h.controller)),
+    BolsoZenApp(
+      home: AuthExperience(
+        createController: () => h.controller,
+        transactions: transactions,
+      ),
+    ),
   );
   h.auth.events.add(uid == null ? null : authUser(uid));
   await tester.pumpAndSettle();
+  // Estes casos históricos verificam o Perfil; a chegada no Início é coberta
+  // pela suíte de integração MainShell, usando a mesma árvore de produção.
+  if (uid != null && h.controller.isReady) await openProfile(tester);
   addTearDown(() async {
     await tester.pumpWidget(const SizedBox());
     await h.auth.events.close();
   });
 }
+
+Future<void> openProfile(WidgetTester tester) =>
+    tapVisible(tester, find.widgetWithText(NavigationDestination, 'Perfil'));
 
 Future<void> tapVisible(WidgetTester tester, Finder finder) async {
   await tester.ensureVisible(finder);
@@ -179,13 +194,14 @@ void main() {
       expect(find.byType(ProfileScreen), findsNothing);
       profile.complete(userProfile('a', name: 'Nome do Firestore'));
       await tester.pumpAndSettle();
+      await openProfile(tester);
       expect(find.text('Nome do Firestore'), findsOneWidget);
       expect(find.text('a@example.test'), findsOneWidget);
       expect(find.byType(LoginScreen), findsNothing);
     },
   );
   testWidgets(
-    'Login válido via gate leva ao Perfil e logout elimina rotas anteriores',
+    'Login válido via gate permite Perfil e logout elimina rotas anteriores',
     (tester) async {
       final h = SessionHarness();
       h.users.profiles['a'] = userProfile('a', name: 'João Real');
@@ -197,6 +213,7 @@ void main() {
       await openLogin(tester);
       await fillLogin(tester);
       await tapVisible(tester, find.byKey(const ValueKey('login-submit')));
+      await openProfile(tester);
       expect(find.byType(ProfileScreen), findsOneWidget);
       expect(find.text('João Real'), findsOneWidget);
       await tapVisible(tester, find.byKey(const ValueKey('logout-submit')));
@@ -299,6 +316,7 @@ void main() {
       expect(find.text('Nome b'), findsNothing);
       h.users.profiles['a'] = userProfile('a');
       await tapVisible(tester, find.text('Tentar novamente'));
+      await openProfile(tester);
       expect(find.text('Nome a'), findsOneWidget);
       expect(h.auth.logins, 0);
     },
@@ -349,6 +367,7 @@ void main() {
     await mountAuth(tester, h, uid: 'a');
     h.auth.events.add(authUser('b'));
     await tester.pumpAndSettle();
+    await openProfile(tester);
     expect(find.text('Nome b'), findsOneWidget);
     expect(find.text('b@example.test'), findsOneWidget);
     expect(find.text('Nome a'), findsNothing);

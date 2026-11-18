@@ -1,5 +1,336 @@
 # BolsoZen — Progresso
 
+## M5 — Encerrado por aprovação manual do usuário, com ressalvas
+
+Usuário testou o aplicativo financeiro integrado e aprovou seu funcionamento. **M5 encerrado; homologação extensa M5.6 dispensada por decisão expressa do usuário.** Dispensa não significa execução ou aprovação de testes inexistentes. Registros anteriores de revisão pendente são históricos.
+
+Entregues: Dashboard com saldo global/mês corrente/categorias/recentes; Histórico completo; cadastro real de receitas/despesas; formulário TEL-05; três abas privadas integradas e Perfil reutilizado; FinancialController único compartilhado; proteção por UID/expectedUserId; parser/formatador e fronteiras monetárias Web corrigidos com BigInt e inteiros seguros. Fonte de dados continua nos repositórios existentes, sem números fictícios em produção.
+
+Evidência automatizada anterior preservada: **475 testes Flutter aprovados**, format sem erros, analyzer com **41 informes de depreciação** e zero erros/warnings, captura integrada opt-in aprovada com oito screenshots. Esta tarefa não reexecutou Flutter, integração, testes remotos ou homologação extensa; revisão documental e comandos Git não substituem essas evidências. Registro conciso em [M5_HOMOLOGACAO.md](M5_HOMOLOGACAO.md), relatórios visuais e logs ignorados anteriores preservados.
+
+### Ressalvas cumulativas transferidas ao M9
+
+- Integração financeira adicional com SDKs reais apontando exclusivamente aos emuladores locais Auth/Firestore.
+- Verificações Android/Web que não foram executadas no M5, sem converter testes de widgets/capturas em homologação nativa.
+- Teclado virtual e acessibilidade nativa/TalkBack; texto ampliado e insets simulados são somente evidência local.
+- Persistência após encerramento/reabertura real do processo quando ainda não comprovada, inclusive sessão autenticada Android herdada do M4.
+- Bateria Chrome automatizada do M4 interrompida por OOM, origem fixa/reload/histórico e checkpoints restantes; persistência Safari relatada pelo usuário continua evidência manual, sem generalização ao Android.
+- Revisão dos **41 informes atuais**, incluindo o histórico M4; não somar contagens históricas nem ocultar diagnósticos.
+
+Preservados [M4_HOMOLOGACAO.md](M4_HOMOLOGACAO.md) e backlog M9 do PLANO.md. Ressalvas aceitas não bloqueiam encerramento ou commit; futura execução depende do marco/autorização apropriados. Sem Firebase remoto, regras/índices/Gradle/dependências alterados ou exclusão de dados nesta tarefa.
+
+### Revisão e registro Git do M5
+
+Branch main e base M4 `606af8b5cee6eeba349d9aab22af1f5d89be9551` confirmadas. Seleção explícita dos arquivos M5, incluindo testes, diagnósticos monetários reutilizáveis e evidências identificadas como fixtures. JSON redundante `assets/illustrations/google-services.json` preservado, excluído da seleção. Builds/logs/caches/perfis de navegador e credenciais administrativas não serão versionados. Revisão de conteúdo e diff-check antecedem staging/commit; hash e quantidade serão informados no relatório final a partir do resultado do Git. Nenhum push/deploy. Planejamento do M6 somente após esse commit, sem implementação.
+
+Seleção pré-commit conferida: **90 arquivos**, sendo 60 textos/fontes/manifestos e 30 PNGs de evidências. Nenhum arquivo temporário/build/cache selecionado; revisão e varredura por padrões de chaves privadas, service account e tokens não encontraram ocorrências na seleção textual. Senhas ilustrativas de testes permanecem restritas a fakes/emuladores já identificados; não são credenciais de contas remotas. Dados monetários das screenshots são fixtures identificadas, sem dados financeiros pessoais. Revisão não constitui garantia absoluta de detecção automática de segredos.
+
+## M5.5 — Navegação privada integrada, aguardando revisão
+
+M5.4 revisado e aprovado tecnicamente pelo usuário. Implementado exclusivamente M5.5. **Não iniciar M5.6 sem autorização.** Os registros seguintes descrevem etapas históricas; aplicação normal agora abre Dashboard após identidade e perfil confirmados.
+
+### Arquivos e comportamento
+
+- Novo `lib/app/main_shell.dart`: dono de um FinancialController por identidade pronta; initState cria/carrega uma vez, dispose encerra seus recursos. IndexedStack preserva telas/rolagem e controller entre Início, Transações e Perfil. Formulário usa a mesma instância e Navigator privado, com trava contra abertura duplicada.
+- `lib/app/auth_experience.dart` e `lib/main.dart`: readyBuilder passa a criar MainShell com chave navigationVersion/UID, recebendo o repositório financeiro já existente de AppDependencies. FirebaseStartup, AppDependencies, SessionController e SessionGate continuam reutilizados; nenhum segundo bootstrap ou repositório criado.
+- `lib/core/theme/app_theme.dart`: tema centralizado de NavigationBar oficial, três destinos reais, Roboto 12, ícones 24, primary/mintSurface, altura 64. Sem abas falsas Orçamento/Relatórios.
+- `dashboard_screen.dart`: FAB real e Ver todas funcional por callbacks da composição, preservando estilo aprovado, mês atual e cálculos do controller. `transactions_screen.dart`: FAB real e espaço inferior na lista para não encobrir o último item. Nenhum acesso Firestore no build.
+- `integration_test/m4_ui_local_app.dart`: somente inclusão do repositório já inicializado na composição exigida; guardas demo-bolsozen/emuladores preservadas, sem execução do runner remoto.
+- Testes novos `test/presentation/main_shell_harness.dart` e `main_shell_test.dart`; ajustados `auth_screens_test.dart`, `register_screens_test.dart` e `test/visual/m4_auth_preview.dart` para o novo destino padrão, mantendo os casos anteriores e visitando a aba Perfil nos testes específicos desse destino.
+- Novo runner opt-in `test/visual/m5_shell_capture.dart`, evidências em docs/evidencias/m5-5 e relatório M5_5_VALIDACAO_VISUAL.md. Atualizados este progresso e PLANO_M5.md.
+
+### Segurança, sincronização e limites
+
+Não há nova leitura ao abrir formulário/trocar aba/retornar de gravação. O controller existente realiza a única recarga completa posterior ao commit; confirmação e atualização pendente permanecem distintas. Retry de leitura não repete create. Ao sair manualmente de formulário com atualização pendente, o snapshot anterior continua explicitamente desatualizado; sem snapshot, nenhum zero é apresentado como confirmado.
+
+Gate só cria shell com sessão/perfil válidos; ausência/erro de perfil segue o M4. Logout e troca de UID removem inclusive rotas secundárias; controller antigo limpa dados e é descartado. Resultados atrasados não publicam nem navegam em sessão nova. Perfil mantém nome/e-mail reais e logout com tratamento de falhas. Domínio, precisão monetária, expectedUserId e repositórios financeiros preservados nesta etapa.
+
+### Validação
+
+| Verificação final M5.5 | Resultado |
+|---|---|
+| dart format . | Exit 0; 102 arquivos, zero alterados na execução final |
+| flutter analyze | Exit 1 pelos 41 informes de depreciação; zero erros/warnings |
+| flutter test --concurrency=1 | Exit 0; **475 aprovados**, 454 anteriores preservados + 21 novos |
+| Captura opt-in integrada | Exit 0; um teste separado aprovado e oito PNGs, sem OOM |
+| git diff --check | Exit 0; sem erros de whitespace, avisos LF/CRLF informativos |
+
+Novos informes do analyzer: imports Material oficiais em main_shell.dart, main_shell_harness.dart, main_shell_test.dart e m5_shell_capture.dart, sem supressão/refatoração ampla. Os 21 testes cobrem login para Dashboard, barreiras de perfil, três abas, uma carga/controller, preservação de rolagem, Ver todas, abertura/retorno pelas duas origens, abertura duplicada, atualização saldo/lista, commit com falha de refresh/retry de leitura, aviso stale, logout/descarte/Voltar, UID e respostas atrasadas, 360/390/412 dp com texto 1/2 e alvos/rótulos acessíveis.
+
+Oito screenshots inspecionadas: três abas e formulário em 390 dp, Dashboard em 360/412, Dashboard/Histórico com texto 2 em 360. Barra é a NavigationBar real de três destinos, não fixture de cinco abas. Formulário sem barra visível; nenhuma duplicação/overflow identificado. Ícones e indicador nativos mantêm aproximações descritas em [M5_5_VALIDACAO_VISUAL.md](M5_5_VALIDACAO_VISUAL.md). Captura verifica FAB tocável e registra seus limites no manifesto; sem submissão ou gravação. Não confundir com execução nativa Android/Chrome ou aprovação visual automática.
+
+A primeira execução direcionada encontrou somente falhas na preparação/expectativas dos testes novos: tentativa de tocar Entrar fora da viewport, representação textual esperada do saldo negativo, e-mail normalizado e descarte do handle de semântica no fim do teste. Corrigidos os testes, sem esconder falhas; suíte direcionada com 21 aprovados. Analyzer detectou inicialmente um argumento novo ausente no runner local M4; corrigido com a instância já existente. Logs locais ignorados em build/m5-5-*.log, sem credenciais/dados remotos.
+
+Sem build Android pesado, alteração Firebase/regras/índices, contas/transações remotas, dependências, Gradle, staging, commit, push ou deploy. JSON redundante preservado e não incluído no Git. Homologação com plugins reais/dispositivo pertence ao próximo marco autorizado; evidência do renderer de testes não substitui Android/Web/TalkBack.
+
+## M5.4 — Formulário e criação, entregue para revisão (18/11/2026)
+
+**M5.3 aprovado visualmente pelo usuário.** Os quatro ajustes finais autorizados foram incorporados nesta entrega. M5.4 implementado e aguardando revisão; M5.5 não iniciado. Os registros anteriores são históricos e não substituem esta situação atual.
+
+### Entrega e arquivos
+
+- Novo `lib/presentation/screens/transactions/transaction_form_screen.dart`: formulário TEL-05 com Receita/Despesa, valor em reais, categorias compatíveis, data inclusive futura, descrição obrigatória e Conta principal informativa. Reutiliza SubmitButton, CategoryIcon, Money, tokens e Material 3 existentes. Validação, loading, bloqueio de envio duplicado e erros em português; sem alteração da navegação normal.
+- Novo `lib/domain/services/transaction_validation.dart`: validações puras de valor positivo/seguro, descrição de 1–120 caracteres Unicode, categoria/tipo e data. Sem segundo modelo monetário.
+- `financial_controller.dart`: criação pelo TransactionRepository real com expectedUserId e uma única chamada de escrita, seguida de carga completa compartilhada. Não publica totais parciais. Aguarda leitura anterior e inicia leitura nova após confirmação da gravação; exige que o ID confirmado apareça no histórico antes de declarar dados atualizados. Falha de atualização não repete criação. Resultado incerto bloqueia reenvio do mesmo formulário e exige conferência do histórico; uma leitura não garante cancelamento de escrita anterior.
+- `dashboard_screen.dart`: seletor removido da interface; competência sempre do mês local atual, incluindo virada do mês e retorno do segundo plano. Timer local com intervalo máximo diário, sem polling Firestore, cancelado em background/dispose. FinancialMonth e selectMonth preservados. Saldo global mantém todo o histórico; totais/categorias usam mês corrente.
+- `transactions_screen.dart`, `transaction_tile.dart`, `category_icon.dart`: cabeçalhos textPrimary 14/semibold, títulos 16/semibold e ícones 28 dp somente no Histórico; cores, fundos, agrupamento e espaçamentos preservados.
+- `financial_visual_tokens.dart`: cor de texto do controle Despesa do novo formulário ajustada para contraste; não redesenha componentes aprovados.
+- Testes novos: `transaction_validation_test.dart`, `transaction_creation_test.dart`, `dashboard_current_month_test.dart` e `transaction_form_test.dart`; adaptados `financial_screens_test.dart` e `financial_test_fakes.dart`. Runners `m5_financial_capture.dart` e novo `m5_transaction_capture.dart` reutilizam `visual_fonts.dart`, somente com opt-in.
+- Documentação: PLANO_M5.md, este progresso, M5_3_VALIDACAO_VISUAL.md e novo M5_4_VALIDACAO_VISUAL.md. Evidências atualizadas em docs/evidencias/m5-3 e m5-4; preservadas as capturas aprovadas de 390 dp com prefixo aprovado-.
+
+### Qualidade e evidências
+
+Suíte de **454 testes Flutter aprovados**: os 414 anteriores preservados e 40 novos. Cobertura de receita/despesa, validações, precisão, datas futuras, submissão duplicada, escrita confirmada seguida de falha de leitura, resultado incerto, UID/logout/dispose, virada de mês sem nova consulta, navegação isolada, responsividade 360/390/412 dp, texto ampliado, teclado simulado e acessibilidade. Nenhuma operação Firebase remota.
+
+`dart format .`: exit 0, 98 arquivos, zero alterados na última execução. `flutter analyze`: 37 informes de depreciação, zero erros/warnings, exit 1 pelos informes (33 anteriores e quatro imports Material oficiais novos); sem supressão. `flutter test --concurrency=1`: 454 aprovados, exit 0. Dois testes separados de captura opt-in aprovados, gerando 18 imagens (12 Dashboard/Histórico e seis formulário). `git diff --check`: sem erros de whitespace na verificação final.
+
+A execução inicial encontrou contraste insuficiente no controle Despesa e uma expectativa de teste pelo tooltip inglês Back; corrigidos o contraste do novo controle e o teste para Voltar. Inspeção visual detectou data por extenso cortada com fonte 2; campo passou a dd/MM/yyyy pt-BR. Não houve OOM. Logs locais ignorados em build/m5-4-*.log; não incluir logs no Git.
+
+### Limitações e próxima etapa
+
+Capturas são do renderer Flutter de testes com fixtures identificadas, não do Chrome/Android. Insets de teclado são simulados, sem homologação de IME/TalkBack. Data numérica, rótulos flutuantes e contador de descrição são adaptações documentadas de TEL-05. Formulário/controlador ainda isolados da aplicação normal; ligação das rotas/FAB e recarga entre abas pertence exclusivamente ao M5.5. Sem criação remota, alteração de repositórios financeiros, regras, índices, Gradle ou dependências nesta entrega. JSON redundante preservado e fora do staging; sem commit/push/deploy. Próximo passo: revisão visual do TEL-05 e dos quatro ajustes pelo usuário, aguardando autorização para M5.5.
+
+## M5.3 — Revisão visual obrigatória, aguardando novo aceite
+
+**O usuário revogou o aceite visual anterior para homologação definitiva.** Executada somente a correção visual TEL-04/TEL-06 solicitada; não iniciar M5.4. Este registro substitui as decisões visuais anteriores que omitiam sino, olho, terceiro indicador, categorias, recentes e estrutura de busca/chips. Essas estruturas agora foram expressamente autorizadas com indisponibilidade honesta dos recursos futuros, sem implementar os módulos completos.
+
+### Correções entregues e limites
+
+Dashboard: avatar verde, saudação com nome real/👋 e sino não interativo; saldo com gradiente amostrado, carteira decorativa, olho circular desabilitado; três indicadores compactos (receitas/despesas reais e Meta do mês Em breve); categorias/ícones pastel/barras/percentuais confirmados; um lançamento recente; Ver mais/Ver todas/FAB indisponíveis com identificação do marco futuro. Seletor mensal permanece funcional, agora abaixo dos indicadores. Refresh real por puxar para baixo, validado nas duas telas.
+
+Histórico: busca/lupa/ajustes e pills somente visuais, sem handlers ou promessa de funcionalidade; caption explícita M6. Agrupamento de dias locais em Hoje/Ontem/outras datas, cards brancos com sombras suaves, ícones específicos coloridos e tipografia monetária compacta. ListView.builder permanece lazy por linha/cabeçalho. Busca e chips rolam junto com o histórico para manter espaço ao conteúdo ampliado e ao aviso stale fixo.
+
+FinancialProjection é uma projeção pequena, determinística e somente de apresentação: usa categoryPercentages já calculado por FinancialCalculator, seleciona o primeiro histórico confirmado para recente e intercala cabeçalhos de datas. Nenhum saldo/totais foi duplicado, nenhuma transação retirada da lista completa e nenhuma consulta adicional. Participação nos gastos não é utilização de orçamento. Meta não afirma que não há configuração, pois orçamento não foi consultado; mostra somente Em breve.
+
+FinancialController, FinancialCalculator, Money/precisão, repositórios/expectedUserId, modelos, SessionController/Gate, autenticação, onboarding, Perfil, regras/índices/Firebase e Gradle não foram alterados nesta revisão. Tema global preservado; tons financeiros derivados da prancha estão isolados. App normal continua sem conexão às telas financeiras; não há formulário, edição/exclusão, busca/filtragem ou navegação de produção nova. O rodapé de cinco destinos aparece **apenas no runner visual**, excluído da semântica e sem ações; não é NavigationBar funcional.
+
+### Arquivos desta revisão
+
+- Novos lib/core/theme/financial_visual_tokens.dart e lib/presentation/services/financial_projection.dart.
+- Novos widgets category_spending_section.dart, unavailable_financial_action.dart e unavailable_history_filters.dart.
+- Revisados dashboard_screen.dart, transactions_screen.dart, balance_card.dart, category_icon.dart, monthly_totals_cards.dart e transaction_tile.dart. financial_month_selector.dart/financial_load_state.dart e controller preservados.
+- Teste novo test/presentation/financial_projection_test.dart; ajustados financial_screens_test.dart e test/visual/m5_financial_capture.dart, mantendo todos os casos anteriores.
+- docs/M5_3_VALIDACAO_VISUAL.md refeito com comparação antes/depois, tabela de fidelidade e auditoria de ícones/cores; este progresso e nota de atualização em PLANO_M5.md.
+- Evidências: doze PNGs revisados e manifesto em docs/evidencias/m5-3; preservadas duas imagens anteriores de 390 dp como antes-dashboard-390.png e antes-transacoes-390.png. Nenhuma fonte/imagem externa acrescentada ao app.
+
+### Execuções e resultados reais
+
+| Validação | Resultado |
+|---|---|
+| dart format . | Exit 0; 90 arquivos examinados, um ajustado na execução final |
+| flutter analyze | Exit 1 pelos **33 informes de depreciação**, zero erros/warnings |
+| flutter test --concurrency=1 | **414 aprovados**, exit 0; os 407 casos preservados + sete direcionados |
+| Captura opt-in pelo renderer Flutter | Um teste separado aprovado, doze imagens finais, exit 0, sem OOM |
+| git diff --check | Exit 0, sem erros de whitespace; avisos locais LF/CRLF continuam informativos |
+
+Os sete testes novos cobrem participação versus orçamento, recente imutável, agrupamento/virada de ano, vazio sem invenção, composição/ações indisponíveis e atualização por gesto nas duas telas. Casos existentes de responsividade, texto ampliado, semântica/contraste, UID, estado stale/erro/loading e domínio foram preservados. Somente asserções visuais incompatíveis com o novo pedido (ausência de FAB, saudação sem emoji, data sempre no subtítulo e texto de acesso antigo) foram atualizadas; nenhum teste foi removido.
+
+Analyzer: 30 informes da primeira entrega M5.3 e três imports Material oficiais novos; um informe de estilo identificado na revisão foi corrigido. Sem ocultar diagnósticos ou instalar material_ui. A primeira suíte completa da revisão aprovou 413 e falhou em um teste antigo: overflow real de 6 px ao combinar texto ampliado, filtros visuais e estado stale/erro. Corrigido tornando busca/chips parte rolável da lista e mantendo aviso fora dela; teste mantido. Suíte final com 414 aprovados executada após a correção. Log da falha preservado localmente em build/m5-3-revisao-test-primeira.log; logs finais de análise/teste/captura em build/m5-3-revisao-*.log, ignorados.
+
+### Evidência visual, diferenças e decisões pendentes
+
+Doze capturas finais abertas/inspecionadas e comparadas com a prancha: duas telas em 360/390/412 dp, texto 2 em 360, valor extenso e fixture adicional de composição em 390. Capturas do renderer Flutter de testes com Roboto/MaterialIcons locais e emoji de fonte de sistema existente somente no runner; não Android/Chrome. Sem overflow nas capturas finais. O conteúdo ampliado rola e valores extremos podem ocupar mais linhas, sem perda de centavos ou ellipsis.
+
+Fixture T1 mantém saldo 60000, receitas 100000 e despesas novembro 35000 centavos. Na fixture adicional, datas foram alteradas **somente em memória de teste** para três categorias no mês e dois grupos de dias; despesas mensais 40000, saldo global 60000. Não confundir com os valores da prancha ou com dados reais de usuário. Não houve criação remota, conta de teste, envio de e-mail ou acesso Firebase nesta revisão.
+
+Relatório completo: [M5_3_VALIDACAO_VISUAL.md](M5_3_VALIDACAO_VISUAL.md). Classificações incluem Fiel, Aproximado, Diferente e Adiado por dependência funcional, sem declarar 100% ou pixel-perfect. Carteira/alguns traços Material e cores raster são aproximados; seletor mensal/caption M6 são adaptações explícitas. O vermelho compacto foi escurecido para contraste em texto 14, mantendo o vermelho global do tema intacto. Usuário deve revisar essa opção versus vermelho original em texto maior, a posição do seletor, as indisponibilidades e eventual necessidade de asset próprio da carteira. Nenhum asset/dependência foi incluído sem aprovação.
+
+Permanecem adiados: ação do olho, busca/filtros/edição/exclusão completos M6; percentuais de orçamento M7; detalhamento/relatórios M8; formulário M5.4 e ligação/navegação M5.5. TalkBack, renderização/rolagem Android/Web e aceite visual definitivo continuam pendentes. Não houve build pesado, instalação, deploy, staging, commit ou push. JSON redundante assets/illustrations/google-services.json preservado e não rastreado. **Aguardar revisão visual do usuário; M5.4 não autorizado.**
+
+## M5.3 — Dashboard e lista implementados para revisão
+
+M5.2 revisado/aprovado pelo usuário. Implementado exclusivamente M5.3, sem formulário, escrita ou ligação à navegação normal; M5.4 e posteriores não autorizados. Os registros de autorização anteriores abaixo são históricos.
+
+### Arquivos desta etapa
+
+- lib/presentation/screens/dashboard/dashboard_screen.dart.
+- lib/presentation/screens/transactions/transactions_screen.dart.
+- lib/presentation/widgets/balance_card.dart, monthly_totals_cards.dart, financial_month_selector.dart, transaction_tile.dart, category_icon.dart e financial_load_state.dart.
+- test/presentation/financial_screens_test.dart e financial_test_fakes.dart.
+- test/visual/m5_financial_capture.dart, runner opt-in fora da descoberta padrão *_test.dart.
+- docs/evidencias/m5-3/: dez PNGs e manifest.json, somente fixtures identificadas.
+- docs/M5_3_VALIDACAO_VISUAL.md, docs/PLANO_M5.md e este progresso.
+
+Alterações M5.1/M5.2 já existentes foram preservadas; o status Git também contém esses arquivos ainda sem commit. Nenhuma modificação adicional no controller, domínio, repositórios, sessão, tema global, onboarding, autenticação, Perfil, Firebase, regras, índices, Gradle ou dependências. JSON redundante assets/illustrations/google-services.json continua não rastreado, intacto e fora de staging.
+
+### Funcionalidades entregues
+
+Dashboard com nome/inicial do perfil correspondente ao UID, saldo global, receitas/despesas confirmadas, seletor de competência e atualização manual. Apenas formata resultados do FinancialController/Money; não calcula totais em widgets. Indicação textual da área Transações, sem ação falsa ou rota incompleta. Lista completa com ListView.builder, ordem do domínio, descrição/categoria/data de ocorrência, sinais +/− e ícones Material. Não há onTap de edição, filtros, busca, gráfico, orçamento, FAB ou barra inferior antecipados.
+
+ListenableBuilder reage a idle/loading/refreshing/ready/empty/error/sessionInvalidated. Carga incompleta/erro inicial não mostram saldo zero fictício; vazio confirmado mostra zeros legítimos. Refresh preserva snapshot completo anterior apenas com aviso de possível desatualização. Aviso e recuperação ficam fora da área de rolagem em ambas as telas, inclusive quando o usuário já rolou. UID incompatível/sessão invalidada oculta os dados, sem nome ou valores anteriores.
+
+### Validações executadas
+
+| Comando/verificação | Resultado real |
+|---|---|
+| dart format . | Exit 0; 84 arquivos examinados, dois formatados na execução final |
+| flutter analyze | Exit 1 apenas pelos **30 informes de depreciação**; zero erros/warnings |
+| flutter test --concurrency=1 | **407 aprovados**, exit 0: 374 anteriores + **33 novos** |
+| Runner visual opt-in | **Um teste adicional aprovado**, exit 0; dez capturas do renderer Flutter com fontes Roboto/MaterialIcons do SDK; sem OOM |
+| git diff --check | Exit 0; avisos locais LF/CRLF não são erros de whitespace |
+
+Analyzer: 20 informes preexistentes e dez novos de import package:flutter/material.dart (oito arquivos de telas/widgets, teste de widgets e captura). Mantido Material oficial conforme decisões aprovadas; sem ignorar diagnósticos, adicionar material_ui ou alterar SDK/dependências. Três informes novos de estilo da análise inicial foram corrigidos.
+
+Cobertura nova: saldos positivo/zero/negativo, nome/tema, T1 mensal e troca de competência sem leitura extra, ordem lazy/lista/datas/sinais, idle/vazio/carga incompleta, rede/retry, refresh/stale/erro, aviso persistente após rolagem, UID incompatível/logout, semântica de tipo/categoria/data/valor, alvos de toque Android/labels/contraste e 12 combinações de tela/largura 360–390–412/texto 1–2 com valor máximo seguro e descrição longa.
+
+Primeira execução focal encontrou duas falhas no próprio teste: exigir todos os itens já construídos por uma lista lazy e encerrar tarde o handle de semântica. Corrigidas para verificar a ordem visível e rolar até o último item e liberar o handle antes de encerrar o teste. Nenhum teste removido. Uma revisão posterior fixou o aviso stale fora da rolagem; dois testes novos verificam esse comportamento. A suíte final acima passou após esse ajuste.
+
+### Comparação visual e limitações
+
+Prancha oficial inspecionada visualmente; capturas reais do **renderer Flutter de testes**, com fontes locais Roboto/MaterialIcons e sombras reais do tema, comparadas a TEL-04/TEL-06. Não são screenshots Android/Chrome nem prova de persistência Firebase. Seis capturas normais (duas telas × três larguras), duas com texto 2 em 360 e duas com texto 2/valor extremo/descrição extensa. Captura inicial foi corrigida para não usar sombras artificiais desabilitadas pelo test runner e para não ampliar o rótulo técnico da fixture. Dez arquivos finais correspondem ao código final.
+
+Referências, links e diferenças detalhados em [M5_3_VALIDACAO_VISUAL.md](M5_3_VALIDACAO_VISUAL.md). Omissões M6–M8/M5.4–M5.5 são intencionais e autorizadas; ícones usam apenas os tokens oficiais, sem inventar azuis/roxos para categorias. Valores secundários usam titleLarge 20/w700 para manter contraste do vermelho do token como texto grande; quantias extremas e texto ampliado ocupam mais linhas sem ellipsis, redução silenciosa de fonte ou perda de centavos. Não declarar pixel-perfect.
+
+Testes de acessibilidade básicos passaram, mas TalkBack, toque/rolagem nativos e renderização Android/Web aguardam homologação em plataforma. App normal continua no fluxo aprovado do M4, sem novos dados fictícios de produção ou rotas conectadas. Logs locais ignorados: build/m5-3-analyze.log, build/m5-3-test.log, build/m5-3-capture.log; nenhuma credencial ou dado pessoal real nas evidências.
+
+Próximo passo: usuário revisar telas/capturas e autorizar separadamente M5.4. Criação de transações continua fora desta entrega; composição normal somente M5.5. Nenhum teste remoto, conta/documento remoto, build Android/Web, staging, commit, push ou deploy nesta etapa.
+
+## M5.2 — Carregamento financeiro implementado para revisão
+
+M5.1 aprovado pelo usuário, incluindo expectedUserId, política de precisão BigInt/faixa técnica e 337 testes anteriores. Implementado exclusivamente M5.2; M5.3 e seguintes aguardam autorização. Os estados antigos de autorização abaixo são históricos.
+
+### Arquivos desta etapa
+
+- Novo lib/presentation/controllers/financial_controller.dart.
+- Novo test/presentation/financial_controller_test.dart.
+- Atualizados docs/PLANO_M5.md e docs/PROGRESSO.md.
+
+Alterações M5.1 já presentes no início foram preservadas; status Git contém também esses arquivos ainda não registrados. Não foram novamente alterados domínio financeiro, repositórios, sessão, configuração, dependências, Gradle, regras, índices, assets ou funcionalidades de autenticação nesta etapa. assets/illustrations/google-services.json continua não rastreado e sem staging.
+
+### Entrega e estados públicos
+
+FinancialController com ChangeNotifier, injetando TransactionRepository, SessionController e UID esperado fixo; mês inicial opcional. Não inicia consultas no construtor. API load/refresh/retry/selectMonth; estado observável pronto para ListenableBuilder futuro, sem widgets/telas de produção nesta etapa. FinancialPhase: idle, loading, refreshing, ready, empty, error, sessionInvalidated. Expõe mês, lista imutável confirmada, FinancialSummary?, DataFailure?, isLoading, hasConfirmedSnapshot e isStale.
+
+Carga sequencial de páginas de 100 até página curta/vazia. Cursor é o último registro bruto; valida avanço/tupla/ciclos e tamanho da página. Buffer local por ID, duplicatas idênticas deduplicadas, conteúdo conflitante recusado. Registro de outro UID invalida a instância e apaga snapshot. Valores individuais passam pela faixa monetária aprovada. Cálculos e ordenação finais somente por FinancialCalculator; nenhum resumo parcial publicado. Troca de mês recalcula apenas em memória, inclusive quando alterado durante carga.
+
+Uma Future compartilhada evita refresh simultâneo/reentrante e load repetido após sucesso. Geração/UID/versão da sessão validados antes de cada fetch e após awaits; expectedUserId sempre fornecido. O controller observa a sessão pronta existente e invalida imediatamente ao sair/trocar identidade, inclusive A -> B -> A. Não armazena objetos Firebase ou credenciais. Dispose remove listener e impede publicação/notificação tardia. O shell futuro será dono da instância; nenhuma composição foi ligada agora.
+
+Refresh pode preservar o snapshot completo anterior do mesmo UID com isStale=true, inclusive após erro de rede. Erro na primeira carga mantém summary=null, nunca saldo zero definitivo. Permission-denied apaga os dados; falhas de sessão tornam a instância terminal. Falhas inesperadas não expõem mensagens técnicas. Nenhuma criação de transação implementada.
+
+### Testes e resultados reais
+
+- dart format .: exit 0; 73 arquivos examinados, zero alterado na execução final.
+- flutter analyze: exit 1 pelos **20 informes de depreciação preexistentes**, zero erros e zero warnings. Cinco informes novos de estilo identificados na primeira análise foram corrigidos sem supressão.
+- flutter test --concurrency=1: **374 testes aprovados**, exit 0, incluindo os 337 anteriores e **37 novos** do controller.
+- git diff --check: exit 0, sem erros de whitespace; avisos LF/CRLF locais não representam falha.
+
+Cobertura nova: vazio/0/100/101/200/201; saldo positivo/zero/negativo; T1/outros meses e ano/futuro; ordenação e imutabilidade; duplicatas e cursor bruto; conflito, cursor parado/cíclico/retrocesso e página fora do contrato; falha intermediária/retry sem totais parciais; mês alterado durante carga; refresh/load/retry concorrentes e listener reentrante; snapshot stale/recuperação; permission-denied e sessão perdida; logout, A -> B, A -> B -> A, dispose e respostas tardias; controller B independente; barreira SDK antes do evento; UID alheio; valor incompatível; falha desconhecida e construtor com identidade divergente.
+
+Testes usam repositório determinístico e o SessionController real com Auth/User fakes locais já existentes. Nenhum SDK/emulador remoto ou dado real usado. Logs sanitizados locais em build/m5-2-analyze.log e build/m5-2-test.log, ignorados. Não reexecutados runners M3/M4, Chrome/DDC ou build Android; nenhum OOM nesta etapa.
+
+### Limitações, validação pendente e próxima etapa
+
+Controller ainda isolado do app normal: não há Dashboard, formulário, navegação, escrita ou interface visual para homologar agora. Não houve integração Firestore real nesta etapa. Paginação não é snapshot atômico global; mudanças externas podem exigir refresh; custo e memória crescem com o histórico. O snapshot anterior só poderá aparecer na UI futura com indicação explícita de desatualização. A competência extrema fora da janela anterior suportada pela calculadora gera erro explícito, sem alteração do domínio.
+
+M5.3 deverá implementar Dashboard/lista/componentes e consumo com ListenableBuilder sob nova autorização, com comparação visual/responsividade. M5.4 continua responsável por criação/recarga após gravação e M5.5 pela ligação à aplicação. Não houve commit, staging, push, deploy, acesso remoto ou alteração fora desse escopo. Aguardar revisão do usuário antes de prosseguir.
+
+## M5.1 — Correção da precisão monetária entregue para revisão
+
+Barreira expectedUserId aprovada. Correção monetária especificamente autorizada pelo usuário, com limite técnico de **9007199254740991 centavos** nas fronteiras de entrada e persistência, comum a Android/Web. M5.2 não autorizado. Este registro atualiza os estados históricos de correção pendente abaixo.
+
+### Implementação e arquivos desta correção
+
+- lib/domain/services/money.dart: parse original por BigInt antes de int, limite centralizado e erro de precisão pt-BR; formatação Web defensiva. Assinaturas parseCents/formatCents preservadas.
+- lib/domain/services/financial_calculator.dart: mantém soma BigInt; na Web rejeita entradas incompatíveis e agregados acima da faixa antes de converter. Na VM preserva cálculos nativos maiores exatos e detecção de overflow.
+- lib/data/mappers/firestore_mappers.dart: valida amountCents/limitCents nas duas direções, sem coerção de double/string ou recuperação fictícia de valor já arredondado pelo SDK.
+- lib/data/repositories/firestore_transaction_repository.dart e firestore_budget_repository.dart: rejeição antecipada na criação/save. A barreira de sessão anterior foi preservada; update de transação usa o mapper validado, sem mudar o contrato. Sem funcionalidade nova de orçamento.
+- test/domain/money_test.dart e test/data/firestore_mappers_test.dart: asserções de entrada/persistência antes acima da faixa ajustadas à política aprovada; testes mantidos.
+- test/domain/money_precision_test.dart e test/data/repository_session_test.dart: novos casos de fronteira, erro, formatação, agregados, rejeição antes do SDK; cobertura anterior preservada.
+- test/diagnostics/money_precision_probe.dart: atualizado para verificar aceitação exata/rejeição e agregado por plataforma; runner Chrome anterior reutilizado sem mudança.
+- docs/PLANO_M5.md e este progresso: política final, evidências, diferenças por plataforma e limitações.
+
+### Resultados reais desta execução
+
+| Verificação | Resultado |
+|---|---|
+| dart format . | Exit 0; 71 arquivos examinados, um ajustado na última execução |
+| flutter analyze | Exit 1 somente pelos 20 informes de depreciação conhecidos; zero erros/warnings após correção dos novos testes |
+| flutter test --concurrency=1 | **337 aprovados**, exit 0; 322 casos mantidos + 15 novos |
+| Probe VM | Exit 0; quatro entradas exatas, quatro rejeitadas; agregado 9007199254740993 exato |
+| dart compile js -O1 | Exit 0; compilação do probe em 0,69 s, sem build Android |
+| Probe Chrome real/dart2js | Exit 0; quatro entradas exatas, quatro rejeitadas; quatro números previamente convertidos recusados; agregado fora da faixa rejeitado, nenhuma perda nos valores aceitos |
+| git diff --check | Exit 0; apenas avisos de conversão local LF/CRLF |
+
+Logs locais build/m5-1-safe-analyze.log, build/m5-1-safe-test.log e build/m5-1-safe-money-vm.log; evidência Chrome atual em build/m5-1-money-chrome.json, com javaScript=true e aggregateRejected=true. Artefatos ignorados, sem credenciais. O probe anterior de diagnóstico foi atualizado para a regressão; seus achados originais permanecem documentados no histórico abaixo. As 15 novas unidades abrangem 11 casos monetários/agregados, três de mapeadores e um de rejeição antecipada dos repositórios.
+
+Na primeira análise desta correção houve duas referências a fixtures locais antes da declaração e três informes de estilo no probe; corrigidos sem supressão. A validação final contém apenas os 20 informes preexistentes.
+
+### Comportamento e limitações
+
+Entradas acima da faixa agora falham explicitamente em ambas as plataformas; inclusive 2^53 isoladamente representável é recusado para manter política uniforme. Centavos comuns, agrupamento pt-BR, um centavo, sinais na formatação e regras financeiras normais continuam exatos. Testes T1/T2 e financeiros anteriores passaram.
+
+Dados Firestore fora da faixa são inválidos, mesmo que o SDK já os tenha arredondado; não são exibidos como exatos, convertidos em zero ou ignorados. As regras remotas continuam intactas: a proteção implementada é no cliente e não impede gravação por outro cliente. Não houve operação remota ou teste SDK real desses extremos. Domínio/formatação nativos maiores continuam exatos e permitidos, porém não voltam a ser entrada/persistência válida; na Web agregados maiores são erros explícitos, sem resumo aproximado.
+
+Não repetido o runner Flutter Web/DDC bloqueado anteriormente; probe Chrome/dart2js não equivale à homologação da aplicação completa. Não houve OOM, nova compilação Android, dependência, mudança de autenticação, regra/índice/Gradle ou criação de dado remoto. Nenhum commit/push/deploy/staging. JSON redundante assets/illustrations/google-services.json preservado e não rastreado.
+
+Próxima tarefa: revisão do usuário desta correção M5.1; implementação de M5.2 exige nova autorização. Não há telas novas para homologar visualmente nesta etapa.
+
+## Histórico M5.1 — Barreira de sessão entregue; precisão Web investigada
+
+Planejamento M5 aprovado, incluindo as nove decisões expressamente confirmadas pelo usuário. Autorização restrita ao M5.1; M5.2 e seguintes não autorizados. Registros de planejamento abaixo são históricos e não substituem esta atualização.
+
+### Arquivos criados/alterados
+
+- lib/domain/repositories/transaction_repository.dart: expectedUserId opcional em fetchPage/create.
+- lib/data/repositories/firestore_transaction_repository.dart: verificação da identidade esperada antes de acesso; UID real continua exclusivamente em FirebaseSession.
+- test/data/transaction_repository_session_test.dart: 14 testes de sessão/concorrência/compatibilidade.
+- test/domain/money_precision_test.dart: 7 testes de valores representáveis, formatação, sinal e round-trip.
+- test/diagnostics/money_precision_probe.dart: probe puro nativo/JS com oito valores, referências textuais/BigInt.
+- test/diagnostics/run_money_precision_browser.cjs: diagnóstico Chrome loopback, sem pacote adicional ou Firebase.
+- docs/PLANO_M5.md e este arquivo: decisões aprovadas, execução e proposta de correção pendente. PLANO_M5.md já estava novo/não rastreado no início desta etapa.
+
+### Segurança e testes
+
+Barreira aplicada somente a leitura/criação; update/delete preservados. Verificações antes/durante/depois de operações permanecem, inclusive rejeição após mudança de sessão mesmo se o commit já puder ter ocorrido para o proprietário original. Sem promessa de cancelar gravação enviada. Cobertos UID correto/divergente, SDK em B quando chamada espera A, sessão ausente, chamadas sem argumento, troca/logout durante fetch/transaction get, troca antes do callback e depois de set antes da confirmação.
+
+Testes de dados usam SDK com transporte local simulado e Auth controlado, sem backend ou operações remotas. Fixtures Pigeon dependem da versão instalada. Tentativa inicial dos novos testes identificou ausência do app padrão no mock; corrigida inicialização simulada. Avisos de classes SDK sealed no primeiro fake foram eliminados usando referências reais do SDK e transporte simulado, sem supressão de diagnósticos.
+
+Validações executadas sequencialmente, sem build Android:
+
+- dart format .: exit 0; 71 arquivos, nenhum alterado na execução final.
+- flutter analyze: exit 1 por **20 informes de depreciação preexistentes**, 0 erros e 0 warnings; nenhum diagnóstico novo remanescente.
+- flutter test --concurrency=1: **322 testes aprovados**, exit 0 (301 anteriores preservados + 14 de sessão + 7 monetários).
+- Probe Dart nativo: oito casos exatos; compilação dart2js exit 0; Node e Chrome executados com sucesso e **dois casos inexatos reproduzidos**, sem OOM. Resultado local em build/m5-1-money-chrome.json; demais logs build/m5-1-* ignorados.
+- flutter test --platform chrome test/domain/money_precision_test.dart --concurrency=1: **bloqueado antes de executar os sete testes**, com exceções no carregamento DDC e diagnóstico do Flutter `Iframe JS Execution Stalled`. Host Chrome respondia; execução interrompida, exit 1, sem repetição. Não atribuir a OOM sem evidência nem declarar esses sete testes aprovados no Flutter Web. O Flutter informa que concurrency é ignorado em testes Web. Log local build/m5-1-money-flutter-chrome.log preservado; a evidência browser disponível é o probe dart2js, não esta suíte.
+- git diff --check: exit 0, sem erros de whitespace; avisos locais LF/CRLF não são falhas do check.
+
+### Problema monetário encontrado e decisão necessária
+
+No Chrome, Money.parseCents('90071992547409,93') e int.parse('9007199254740993') retornam 9007199254740992 e a formatação mostra R$ 90.071.992.547.409,92. Entrada terminada em ,95 vira ,96. Ambos são exatos na VM. Valores até 9007199254740991 e os inteiros representáveis isolados 9007199254740992/9007199254740994 passaram no probe. Precisão não é uniforme para todo inteiro acima de 2^53−1.
+
+**Money.parseCents/formatCents não foram alterados.** Proposta mínima no PLANO_M5.md: comparar conversão de BigInt original para int e rejeitar entrada inexata, preservando assinaturas, gramática e valores nativos exatos. Requer aprovação específica por mudar aceitação Web. Rejeição do input não resolve sozinha dados nativos maiores já arredondados pelo SDK Web; eventual política comum de faixa exige decisão adicional. Não marcar precisão Web integralmente aprovada porque a suíte VM passou.
+
+### Limitações e próxima tarefa
+
+Nenhuma UI/controller/navegação M5.2 implementada, teste remoto executado ou configuração/regra/índice/Gradle/dependência alterada. assets/illustrations/google-services.json preservado não rastreado, sem staging/commit/push/deploy. Testes unitários de transporte não substituem integração real futura. Sem nova homologação visual nesta etapa sem telas.
+
+Próximo passo: usuário revisar M5.1 e a correção monetária proposta, decidir a política de precisão entre plataformas e autorizar separadamente a continuação. Não iniciar FinancialController ou M5.2 automaticamente.
+
+## M5 — Histórico do planejamento inicial
+
+M4 oficialmente encerrado no commit `606af8b5cee6eeba349d9aab22af1f5d89be9551`. Autorizada exclusivamente a elaboração de [PLANO_M5.md](PLANO_M5.md); nenhum código M5 implementado. Ressalvas M4 permanecem aceitas e transferidas para M9, sem reabrir o marco.
+
+Revisados documentos obrigatórios, protótipo e domínio financeiro, TransactionRepository/FirestoreTransactionRepository, SessionController/SessionGate e AppDependencies. Money existe em domain/services/money.dart; create retorna ID, não documento completo. Plano reutiliza esses componentes, ChangeNotifier/ListenableBuilder e três telas reais: Dashboard, Transações e Nova transação; Perfil M4 preservado.
+
+Propostas: carregar todas as páginas de 100 em buffer, só então publicar resumo/lista, deduplicar por ID e bloquear cursor sem avanço; calcular exclusivamente com FinancialCalculator/FinancialSummary, Money e FinancialMonth. Competência altera apenas totais mensais em memória. Após create confirmado, uma recarga completa compartilhada atualiza Dashboard/lista; falha dessa recarga não repete a criação. Controller privado por sessão descarta resultados de gerações/UIDs antigos e não publica dados parciais como definitivos.
+
+Decisões para revisão: barra temporária Início/Transações/Perfil sem orçamento/relatórios; omissão dos elementos M6–M8 da prancha e seletor de competência junto aos cards; barreira expectedUserId em fetchPage/create para corrida entre SDK e evento de autenticação; tratamento explícito de precisão monetária Web após testes de fronteira. Não há alteração de contrato, regra, índice ou Money executada agora.
+
+Subetapas propostas, todas pendentes de autorização:
+
+- [ ] M5.1 — Barreira de sessão, contratos e validações/precisão.
+- [ ] M5.2 — FinancialController, carga completa e competência com fakes.
+- [ ] M5.3 — Dashboard/lista/componentes e comparação visual isolada.
+- [ ] M5.4 — Formulário de receita/despesa, envio único e recarga.
+- [ ] M5.5 — MainShell e ligação protegida à aplicação normal.
+- [ ] M5.6 — Integração local, evidências e relatório de revisão.
+
+Fora do M5: edição/exclusão, busca/filtros avançados, orçamento e relatórios. Google Login e BolsoZen Bot registrados apenas como possíveis melhorias futuras fora do MVP, sem alterar M5–M9.
+
+Arquivos desta tarefa: novo docs/PLANO_M5.md e atualização deste progresso. Revisão exclusivamente documental e git diff --check; não reexecutados format/analyze/test ou homologação pesada, pois código não mudou. Baseline histórico preservado: 301 testes Flutter e 20 informes do analyzer; não apresentados como nova execução. Nenhum acesso Firebase remoto, conta/transação criada, dependência instalada, Gradle/configuração/asset alterado, staging, commit, push ou deploy. JSON redundante assets/illustrations/google-services.json intacto e não rastreado.
+
+Próxima tarefa: usuário revisar decisões e autorizar separadamente M5.1. Não iniciar implementação automaticamente.
+
 ## M4 — Encerrado e aprovado pelo usuário com ressalvas
 
 O usuário revisou e aprovou o funcionamento e o visual da autenticação e autorizou expressamente encerrar o M4 com as limitações abaixo, sem repetir a homologação completa. Este aceite substitui o estado de revisão pendente dos registros históricos M4.1–M4.6, sem transformar testes não executados em aprovações.

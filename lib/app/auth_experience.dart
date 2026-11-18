@@ -5,14 +5,20 @@ import '../presentation/screens/auth/login_screen.dart';
 import '../presentation/screens/auth/register_screen.dart';
 import '../presentation/screens/auth/complete_profile_screen.dart';
 import '../presentation/screens/auth/session_status_screen.dart';
-import '../presentation/screens/profile/profile_screen.dart';
+import '../domain/repositories/transaction_repository.dart';
 import '../presentation/screens/welcome/welcome_screen.dart';
 import 'session_gate.dart';
+import 'main_shell.dart';
 
 /// Mesma árvore para produção e testes; somente os contratos são injetados.
 class AuthExperience extends StatelessWidget {
-  const AuthExperience({required this.createController, super.key});
+  const AuthExperience({
+    required this.createController,
+    required this.transactions,
+    super.key,
+  });
   final SessionController Function() createController;
+  final TransactionRepository transactions;
 
   @override
   Widget build(BuildContext context) => SessionGate(
@@ -35,8 +41,12 @@ class AuthExperience extends StatelessWidget {
             ),
     ),
     loadingBuilder: (_, session) => SessionStatusScreen(session: session),
-    readyBuilder: (_, session, profile) =>
-        ProfileScreen(session: session, profile: profile),
+    readyBuilder: (_, session, profile) => MainShell(
+      key: ValueKey((session.navigationVersion, profile.userId)),
+      session: session,
+      profile: profile,
+      transactions: transactions,
+    ),
     missingProfileBuilder: (_, session) =>
         CompleteProfileScreen(session: session),
     errorBuilder: (_, session) => SessionStatusScreen(session: session),

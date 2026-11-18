@@ -1,0 +1,58 @@
+{
+  "renderer": "Flutter test engine, RepaintBoundary.toImage; não Android/Chrome",
+  "reference": "TEL-05",
+  "remoteFirebase": false,
+  "fixtureOnly": true,
+  "writes": 0,
+  "clock": "2026-11-18",
+  "captures": [
+    {
+      "file": "nova-transacao-360-texto-1-teclado-0.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 0.0,
+      "filledFixture": true
+    },
+    {
+      "file": "nova-transacao-390-texto-1-teclado-0.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 0.0,
+      "filledFixture": true
+    },
+    {
+      "file": "nova-transacao-412-texto-1-teclado-0.png",
+      "width": 412.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 0.0,
+      "filledFixture": true
+    },
+    {
+      "file": "nova-transacao-360-texto-2-teclado-0.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 2.0,
+      "simulatedKeyboardInset": 0.0,
+      "filledFixture": true
+    },
+    {
+      "file": "nova-transacao-360-texto-1-teclado-300.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 300.0,
+      "filledFixture": true
+    },
+    {
+      "file": "nova-transacao-390-texto-1-teclado-0-vazio.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "simulatedKeyboardInset": 0.0,
+      "filledFixture": false
+    }
+  ]
+}

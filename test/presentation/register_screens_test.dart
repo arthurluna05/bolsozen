@@ -11,7 +11,7 @@ import 'package:bolsozen/presentation/widgets/password_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'auth_screens_test.dart' show mountAuth, tapVisible;
+import 'auth_screens_test.dart' show mountAuth, tapVisible, openProfile;
 import 'session_fakes.dart';
 
 Finder field(String key) => find.byKey(ValueKey(key));
@@ -196,6 +196,7 @@ void main() {
         expect(h.users.writes, [('a', 'João Ávila')]);
         write.complete();
         await tester.pumpAndSettle();
+        await openProfile(tester);
         expect(find.text('João Ávila'), findsOneWidget);
         expect(find.text('a@example.test'), findsOneWidget);
         expect(h.auth.registrations, 1);
@@ -257,6 +258,7 @@ void main() {
     expect(find.byType(ProfileScreen), findsNothing);
     h.users.write = null;
     await tapVisible(tester, find.text('Tentar salvar perfil novamente'));
+    await openProfile(tester);
     expect(find.text('João Ávila'), findsOneWidget);
     expect(h.auth.registrations, 1);
     expect(h.users.writes.length, 2);
@@ -271,6 +273,7 @@ void main() {
     h.users.profiles['a'] = original;
     await fillRegistration(tester);
     await tapVisible(tester, field('register-submit'));
+    await openProfile(tester);
     expect(identical(h.users.profiles['a'], original), isTrue);
     expect(find.text('Nome existente'), findsOneWidget);
   });
@@ -299,6 +302,7 @@ void main() {
       expect(h.users.writes, isEmpty);
       await tester.enterText(field('complete-name'), '  Érica  ');
       await tapVisible(tester, field('complete-submit'));
+      await openProfile(tester);
       expect(find.text('Érica'), findsOneWidget);
       expect(h.auth.registrations, 0);
       expect(h.auth.logins, 0);
@@ -320,6 +324,7 @@ void main() {
       expect(find.byType(ProfileScreen), findsNothing);
       h.users.read = null;
       await tapVisible(tester, find.text('Tentar salvar perfil novamente'));
+      await openProfile(tester);
       expect(identical(h.users.profiles['a'], original), isTrue);
       expect(find.text('Nome salvo'), findsOneWidget);
       expect(h.auth.registrations, 0);

@@ -1,0 +1,119 @@
+{
+  "renderer": "Flutter test engine, RepaintBoundary.toImage; não Chrome/Android",
+  "fonts": "Roboto regular/medium/bold e MaterialIcons do SDK local",
+  "remoteFirebase": false,
+  "fixtureOnly": true,
+  "navigationBar": "Somente desenho de teste, cinco destinos sem ações; não é navegação de produção.",
+  "todayForGrouping": "2026-11-05",
+  "dashboardCurrentMonthClock": "2026-11-18",
+  "captures": [
+    {
+      "file": "dashboard-360-texto-1.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 1.0,
+      "largeValue": false,
+      "compositionFixture": false,
+      "reference": "TEL-04"
+    },
+    {
+      "file": "transacoes-360-texto-1.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 1.0,
+      "largeValue": false,
+      "compositionFixture": false,
+      "reference": "TEL-06"
+    },
+    {
+      "file": "dashboard-390-texto-1.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "largeValue": false,
+      "compositionFixture": false,
+      "reference": "TEL-04"
+    },
+    {
+      "file": "transacoes-390-texto-1.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "largeValue": false,
+      "compositionFixture": false,
+      "reference": "TEL-06"
+    },
+    {
+      "file": "dashboard-412-texto-1.png",
+      "width": 412.0,
+      "height": 844,
+      "textScale": 1.0,
+      "largeValue": false,
+      "compositionFixture": false,
+      "reference": "TEL-04"
+    },
+    {
+      "file": "transacoes-412-texto-1.png",
+      "width": 412.0,
+      "height": 844,
+      "textScale": 1.0,
+      "largeValue": false,
+      "compositionFixture": false,
+      "reference": "TEL-06"
+    },
+    {
+      "file": "dashboard-360-texto-2.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 2.0,
+      "largeValue": false,
+      "compositionFixture": false,
+      "reference": "TEL-04"
+    },
+    {
+      "file": "transacoes-360-texto-2.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 2.0,
+      "largeValue": false,
+      "compositionFixture": false,
+      "reference": "TEL-06"
+    },
+    {
+      "file": "dashboard-360-texto-2-valor-longo.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 2.0,
+      "largeValue": true,
+      "compositionFixture": false,
+      "reference": "TEL-04"
+    },
+    {
+      "file": "transacoes-360-texto-2-valor-longo.png",
+      "width": 360.0,
+      "height": 844,
+      "textScale": 2.0,
+      "largeValue": true,
+      "compositionFixture": false,
+      "reference": "TEL-06"
+    },
+    {
+      "file": "dashboard-390-texto-1-composicao.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "largeValue": false,
+      "compositionFixture": true,
+      "reference": "TEL-04"
+    },
+    {
+      "file": "transacoes-390-texto-1-composicao.png",
+      "width": 390.0,
+      "height": 844,
+      "textScale": 1.0,
+      "largeValue": false,
+      "compositionFixture": true,
+      "reference": "TEL-06"
+    }
+  ]
+}

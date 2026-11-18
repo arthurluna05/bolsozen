@@ -5,6 +5,7 @@ import '../../domain/models/financial_month.dart';
 import '../../domain/models/financial_transaction.dart';
 import '../../domain/models/monthly_budget.dart';
 import '../../domain/models/user_profile.dart';
+import '../../domain/services/money.dart';
 
 abstract final class FirestoreMappers {
   static const transactionKeys = {
@@ -42,6 +43,12 @@ abstract final class FirestoreMappers {
   static DateTime _date(Map<String, dynamic> data, String key) =>
       _field<Timestamp>(data, key).toDate();
 
+  static int _money(Map<String, dynamic> data, String key) {
+    final cents = _field<int>(data, key);
+    Money.requireSafeCents(cents);
+    return cents;
+  }
+
   static FinancialTransaction transaction(
     String id,
     String uid,
@@ -60,7 +67,7 @@ abstract final class FirestoreMappers {
       id: id,
       userId: uid,
       type: type,
-      amountCents: _field<int>(data, 'amountCents'),
+      amountCents: _money(data, 'amountCents'),
       category: Category.fromId(_field<String>(data, 'categoryId')),
       description: _field<String>(data, 'description'),
       occurredAt: _date(data, 'occurredAt'),
@@ -69,14 +76,17 @@ abstract final class FirestoreMappers {
     );
   }
 
-  static Map<String, dynamic> transactionFields(FinancialTransaction value) => {
-    'userId': value.userId,
-    'type': value.type.name,
-    'amountCents': value.amountCents,
-    'categoryId': value.category.id,
-    'description': value.description,
-    'occurredAt': Timestamp.fromDate(value.occurredAt),
-  };
+  static Map<String, dynamic> transactionFields(FinancialTransaction value) {
+    Money.requireSafeCents(value.amountCents);
+    return {
+      'userId': value.userId,
+      'type': value.type.name,
+      'amountCents': value.amountCents,
+      'categoryId': value.category.id,
+      'description': value.description,
+      'occurredAt': Timestamp.fromDate(value.occurredAt),
+    };
+  }
 
   static FinancialMonth month(String value) {
     if (!RegExp(r'^[0-9]{4}-(0[1-9]|1[0-2])$').hasMatch(value)) {
@@ -101,7 +111,7 @@ abstract final class FirestoreMappers {
       userId: uid,
       month: month(_field<String>(data, 'monthKey')),
       category: Category.fromId(_field<String>(data, 'categoryId')),
-      limitCents: _field<int>(data, 'limitCents'),
+      limitCents: _money(data, 'limitCents'),
       createdAt: _date(data, 'createdAt'),
       updatedAt: _date(data, 'updatedAt'),
     );
@@ -111,12 +121,15 @@ abstract final class FirestoreMappers {
     return value;
   }
 
-  static Map<String, dynamic> budgetFields(MonthlyBudget value) => {
-    'userId': value.userId,
-    'monthKey': value.month.key,
-    'categoryId': value.category.id,
-    'limitCents': value.limitCents,
-  };
+  static Map<String, dynamic> budgetFields(MonthlyBudget value) {
+    Money.requireSafeCents(value.limitCents);
+    return {
+      'userId': value.userId,
+      'monthKey': value.month.key,
+      'categoryId': value.category.id,
+      'limitCents': value.limitCents,
+    };
+  }
 
   static UserProfile profile(String uid, Map<String, dynamic> data) {
     _keys(data, profileKeys);

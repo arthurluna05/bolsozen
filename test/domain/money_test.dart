@@ -11,7 +11,7 @@ void main() {
     '0,1': 10,
     '  R\$\u00a01.234,50  ': 123450,
     '0001,01': 101,
-    '90071992547409,93': 9007199254740993,
+    '90071992547409,91': 9007199254740991,
   };
   for (final entry in valid.entries) {
     test(
@@ -48,7 +48,7 @@ void main() {
     expect(Money.formatCents(1), 'R\$ 0,01');
     expect(Money.formatCents(-123456), '-R\$ 1.234,56');
     expect(Money.formatCents(9007199254740993), 'R\$ 90.071.992.547.409,93');
-    for (final cents in [1, 10, 101, 123456, 9007199254740993]) {
+    for (final cents in [1, 10, 101, 123456, 9007199254740991]) {
       expect(Money.parseCents(Money.formatCents(cents)), cents);
     }
   });

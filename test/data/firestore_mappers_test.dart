@@ -16,10 +16,41 @@ void main() {
     'createdAt': Timestamp.fromDate(now),
     'updatedAt': Timestamp.fromDate(now),
   };
+  for (final raw in [
+    '9007199254740992',
+    '9007199254740993',
+    '9007199254740995',
+  ]) {
+    test('Rejeita centavos incompatíveis recebidos e enviados: $raw', () {
+      final cents = int.parse(raw);
+      expect(
+        () => FirestoreMappers.transactionFields(transaction(amount: cents)),
+        throwsFormatException,
+      );
+      expect(
+        () => FirestoreMappers.budgetFields(budget(limit: cents)),
+        throwsFormatException,
+      );
+      expect(
+        () => FirestoreMappers.transaction('t', 'A', {
+          ...transactionData(),
+          'amountCents': cents,
+        }),
+        throwsFormatException,
+      );
+      expect(
+        () => FirestoreMappers.budget('2026-11_food', 'A', {
+          ...budgetData(),
+          'limitCents': cents,
+        }),
+        throwsFormatException,
+      );
+    });
+  }
   test(
     'Transação mantém valores, tipo, ID e precisão temporal na conversão',
     () {
-      final value = transaction(amount: 9007199254740993);
+      final value = transaction(amount: 9007199254740991);
       final fields = {
         ...FirestoreMappers.transactionFields(value),
         'createdAt': Timestamp.fromDate(value.createdAt),

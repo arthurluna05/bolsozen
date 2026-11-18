@@ -6,6 +6,7 @@ import 'package:bolsozen/data/firebase/data_failure.dart';
 import 'package:flutter/widgets.dart';
 
 import '../presentation/session_fakes.dart';
+import '../presentation/financial_test_fakes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +42,10 @@ void main() {
           child: Banner(
             message: 'TESTE VISUAL',
             location: BannerLocation.topEnd,
-            child: AuthExperience(createController: () => h.controller),
+            child: AuthExperience(
+              createController: () => h.controller,
+              transactions: FinancialTransactionsFake()..uid = 'visual',
+            ),
           ),
         ),
       ),

@@ -32,6 +32,37 @@ void main() {
     auth = TestAuth();
     session = FirebaseSession(auth: auth, firestore: NoFirestore());
   });
+  test(
+    'Valor fora da precisão bloqueia criação e orçamento antes do SDK',
+    () async {
+      auth.user = TestUser('A');
+      final matcher = throwsA(
+        isA<DataFailure>().having(
+          (e) => e.kind,
+          'kind',
+          DataFailureKind.invalidData,
+        ),
+      );
+      await expectLater(
+        FirestoreTransactionRepository(session).create(
+          type: TransactionType.income,
+          amountCents: int.parse('9007199254740993'),
+          category: Category.salary,
+          description: 'Teste',
+          occurredAt: DateTime(2026),
+        ),
+        matcher,
+      );
+      await expectLater(
+        FirestoreBudgetRepository(session).save(
+          month: FinancialMonth(2026, 11),
+          category: Category.food,
+          limitCents: int.parse('9007199254740993'),
+        ),
+        matcher,
+      );
+    },
+  );
   test('Repositórios recusam todas as operações sem sessão antes de acessar Firestore', () async {
     final transactions = FirestoreTransactionRepository(session);
     final budgets = FirestoreBudgetRepository(session);

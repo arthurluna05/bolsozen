@@ -4,6 +4,7 @@ import '../../domain/models/category.dart';
 import '../../domain/models/financial_month.dart';
 import '../../domain/models/monthly_budget.dart';
 import '../../domain/repositories/budget_repository.dart';
+import '../../domain/services/money.dart';
 import '../firebase/data_failure.dart';
 import '../firebase/firebase_session.dart';
 import '../mappers/firestore_mappers.dart';
@@ -36,6 +37,7 @@ final class FirestoreBudgetRepository implements BudgetRepository {
     required int limitCents,
   }) => guardData(() async {
     final uid = session.uid;
+    Money.requireSafeCents(limitCents);
     final value = MonthlyBudget(
       userId: uid,
       month: month,
