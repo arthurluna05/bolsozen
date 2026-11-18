@@ -6,6 +6,7 @@ import '../presentation/screens/auth/register_screen.dart';
 import '../presentation/screens/auth/complete_profile_screen.dart';
 import '../presentation/screens/auth/session_status_screen.dart';
 import '../domain/repositories/transaction_repository.dart';
+import '../domain/repositories/budget_repository.dart';
 import '../presentation/screens/welcome/welcome_screen.dart';
 import 'session_gate.dart';
 import 'main_shell.dart';
@@ -15,10 +16,12 @@ class AuthExperience extends StatelessWidget {
   const AuthExperience({
     required this.createController,
     required this.transactions,
+    this.budgets,
     super.key,
   });
   final SessionController Function() createController;
   final TransactionRepository transactions;
+  final BudgetRepository? budgets;
 
   @override
   Widget build(BuildContext context) => SessionGate(
@@ -46,6 +49,7 @@ class AuthExperience extends StatelessWidget {
       session: session,
       profile: profile,
       transactions: transactions,
+      budgets: budgets,
     ),
     missingProfileBuilder: (_, session) =>
         CompleteProfileScreen(session: session),

@@ -80,7 +80,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
       final receipt = _result;
       return AlertDialog(
         title: const Text('Excluir transação?'),
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.colors.surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadii.card),
@@ -148,8 +148,8 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                   ? null
                   : _delete,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.error,
-                foregroundColor: AppColors.textPrimary,
+                backgroundColor: context.colors.error,
+                foregroundColor: context.colors.onError,
               ),
               child: const Text('Excluir'),
             ),

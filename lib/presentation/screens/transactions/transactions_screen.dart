@@ -169,10 +169,10 @@ class _TransactionsScreenState extends State<TransactionsScreen>
             ? FloatingActionButton(
                 onPressed: onAddTransaction,
                 tooltip: 'Adicionar transação',
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.surface,
+                backgroundColor: context.colors.primary,
+                foregroundColor: context.colors.onPrimary,
                 shape: const CircleBorder(),
-                child: const Icon(Icons.add),
+                child: Icon(Icons.add),
               )
             : null,
         body: SafeArea(
@@ -276,7 +276,7 @@ class _TransactionsScreenState extends State<TransactionsScreen>
                             child: Text(
                               heading,
                               style: Theme.of(context).textTheme.labelLarge!
-                                  .copyWith(color: AppColors.textPrimary),
+                                  .copyWith(color: context.colors.textPrimary),
                             ),
                           ),
                         );

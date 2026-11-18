@@ -24,7 +24,7 @@ class _HistoryCategoryDialogState extends State<HistoryCategoryDialog> {
   Widget build(BuildContext context) => AlertDialog(
     key: const ValueKey('history-category-dialog'),
     title: const Text('Filtrar por categoria'),
-    backgroundColor: AppColors.surface,
+    backgroundColor: context.colors.surface,
     surfaceTintColor: Colors.transparent,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppRadii.card),

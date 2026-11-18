@@ -8,12 +8,16 @@ import 'app/firebase_startup.dart';
 import 'app/app_dependencies.dart';
 import 'app/auth_experience.dart';
 import 'firebase_options.dart';
+import 'core/theme/theme_controller.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final theme = ThemeController(store: LocalThemePreferences());
+  await theme.load();
   late AppDependencies dependencies;
   runApp(
     BolsoZenApp(
+      themeController: theme,
       home: FirebaseStartup(
         initialize: () async {
           final app = await Firebase.initializeApp(
@@ -27,6 +31,7 @@ void main() {
         childBuilder: (_) => AuthExperience(
           createController: dependencies.createSessionController,
           transactions: dependencies.transactions,
+          budgets: dependencies.budgets,
         ),
       ),
     ),

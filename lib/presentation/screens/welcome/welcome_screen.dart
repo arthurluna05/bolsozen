@@ -24,12 +24,18 @@ class WelcomeScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(height: AppSpacing.xl),
-                      Image.asset(
-                        'assets/branding/bolsozen_logo.png',
-                        width: 280,
-                        height: 280,
-                        fit: BoxFit.contain,
-                        semanticLabel: 'BolsoZen, finanças com tranquilidade',
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: context.colors.brandSurface,
+                          borderRadius: BorderRadius.circular(AppRadii.card),
+                        ),
+                        child: Image.asset(
+                          'assets/branding/bolsozen_logo.png',
+                          width: 280,
+                          height: 280,
+                          fit: BoxFit.contain,
+                          semanticLabel: 'BolsoZen, finanças com tranquilidade',
+                        ),
                       ),
                       const SizedBox(height: AppSpacing.md),
                       Text(
@@ -116,9 +122,9 @@ class _IllustrationCarouselState extends State<_IllustrationCarousel> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: index == _page
-                      ? AppColors.primary
+                      ? context.colors.primary
                       : Colors.transparent,
-                  border: Border.all(color: AppColors.primary),
+                  border: Border.all(color: context.colors.primary),
                 ),
               ),
             ),

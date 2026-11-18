@@ -3,6 +3,17 @@ import 'dart:ui';
 /// Tons da prancha TEL-04/TEL-06, isolados para não redesenhar o tema aprovado.
 /// Amostras raster variam com antialias/gradiente; não são medidas Figma.
 abstract final class FinancialVisualTokens {
+  // Paleta da rosca TEL-08; identificação textual acompanha cada segmento.
+  static const reportPalette = [
+    Color(0xFF0E7D68),
+    Color(0xFF10B981),
+    Color(0xFFF59E0B),
+    Color(0xFFEF4055),
+    Color(0xFF7337D2),
+    Color(0xFF2876ED),
+    Color(0xFFA7F3D0),
+    Color(0xFF6B7280),
+  ];
   static const balanceStart = Color(0xFF01855C);
   static const balanceEnd = Color(0xFF00694C);
   static const avatar = Color(0xFF7AE09D);

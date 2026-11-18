@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/financial_visual_tokens.dart';
 import '../../domain/services/money.dart';
 
@@ -20,7 +21,7 @@ class BalanceCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       color: theme.colorScheme.primary,
-      shadowColor: theme.colorScheme.onSurface.withValues(alpha: 0.16),
+      shadowColor: context.colors.shadow.withValues(alpha: 0.16),
       clipBehavior: Clip.antiAlias,
       child: DecoratedBox(
         decoration: const BoxDecoration(
@@ -42,7 +43,7 @@ class BalanceCard extends StatelessWidget {
                 child: Icon(
                   Icons.account_balance_wallet_outlined,
                   size: 88,
-                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.12),
+                  color: Colors.white.withValues(alpha: 0.12),
                 ),
               ),
             ),
@@ -57,7 +58,7 @@ class BalanceCard extends StatelessWidget {
                         Text(
                           'Saldo total',
                           style: theme.textTheme.bodyMedium!.copyWith(
-                            color: theme.colorScheme.onPrimary,
+                            color: Colors.white,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
@@ -72,7 +73,7 @@ class BalanceCard extends StatelessWidget {
                                 : '••••••',
                             key: const ValueKey('global-balance'),
                             style: theme.textTheme.headlineLarge!.copyWith(
-                              color: theme.colorScheme.onPrimary,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -84,8 +85,8 @@ class BalanceCard extends StatelessWidget {
                     key: const ValueKey('balance-visibility'),
                     tooltip: visible ? 'Ocultar saldo' : 'Mostrar saldo',
                     onPressed: onToggleVisibility,
-                    color: theme.colorScheme.onPrimary,
-                    disabledColor: theme.colorScheme.onPrimary,
+                    color: Colors.white,
+                    disabledColor: Colors.white,
                     style: IconButton.styleFrom(
                       disabledBackgroundColor: FinancialVisualTokens.balanceEnd,
                       backgroundColor: FinancialVisualTokens.balanceEnd,

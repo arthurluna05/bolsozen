@@ -65,3 +65,20 @@ android/.kotlin/
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*
+
+# Materiais internos mantidos apenas no computador (não remover fisicamente).
+/test/
+/integration_test/
+/docs/
+/firebase/
+/design/
+**/RunnerTests/
+*.md
+!/README.md
+/.agents/
+/.codex/
+/assets/illustrations/google-services.json
+*.pem
+*.p12
+*.pfx
+*.key

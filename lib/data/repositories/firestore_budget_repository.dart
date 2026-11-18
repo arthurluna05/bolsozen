@@ -14,29 +14,34 @@ final class FirestoreBudgetRepository implements BudgetRepository {
   final FirebaseSession session;
 
   @override
-  Future<List<MonthlyBudget>> fetchMonth(FinancialMonth month) =>
-      guardData(() async {
-        final uid = session.uid;
-        final snapshot = await session
-            .user(uid)
-            .collection('budgets')
-            .where('monthKey', isEqualTo: month.key)
-            .get(const GetOptions(source: Source.server));
-        session.verify(uid);
-        return List.unmodifiable(
-          snapshot.docs.map(
-            (doc) => FirestoreMappers.budget(doc.id, uid, doc.data()),
-          ),
-        );
-      });
+  Future<List<MonthlyBudget>> fetchMonth(
+    FinancialMonth month, {
+    String? expectedUserId,
+  }) => guardData(() async {
+    final uid = session.uid;
+    if (expectedUserId != null) session.verify(expectedUserId);
+    final snapshot = await session
+        .user(uid)
+        .collection('budgets')
+        .where('monthKey', isEqualTo: month.key)
+        .get(const GetOptions(source: Source.server));
+    session.verify(uid);
+    return List.unmodifiable(
+      snapshot.docs.map(
+        (doc) => FirestoreMappers.budget(doc.id, uid, doc.data()),
+      ),
+    );
+  });
 
   @override
   Future<void> save({
     required FinancialMonth month,
     required Category category,
     required int limitCents,
+    String? expectedUserId,
   }) => guardData(() async {
     final uid = session.uid;
+    if (expectedUserId != null) session.verify(expectedUserId);
     Money.requireSafeCents(limitCents);
     final value = MonthlyBudget(
       userId: uid,
@@ -50,6 +55,7 @@ final class FirestoreBudgetRepository implements BudgetRepository {
     await session.firestore.runTransaction((tx) async {
       session.verify(uid);
       final stored = await tx.get(ref);
+      session.verify(uid);
       if (stored.exists) FirestoreMappers.budget(ref.id, uid, stored.data()!);
       session.verify(uid);
       if (stored.exists) {
@@ -72,8 +78,10 @@ final class FirestoreBudgetRepository implements BudgetRepository {
   Future<void> remove({
     required FinancialMonth month,
     required Category category,
+    String? expectedUserId,
   }) => guardData(() async {
     final uid = session.uid;
+    if (expectedUserId != null) session.verify(expectedUserId);
     if (category.type != TransactionType.expense) {
       throw ArgumentError('Categoria inválida');
     }
@@ -84,6 +92,7 @@ final class FirestoreBudgetRepository implements BudgetRepository {
     await session.firestore.runTransaction((tx) async {
       session.verify(uid);
       final stored = await tx.get(ref);
+      session.verify(uid);
       if (stored.exists) {
         FirestoreMappers.budget(ref.id, uid, stored.data()!);
         session.verify(uid);

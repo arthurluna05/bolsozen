@@ -2,13 +2,34 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/theme/financial_visual_tokens.dart';
 import '../../domain/models/financial_summary.dart';
 import '../../domain/services/money.dart';
+import '../controllers/budget_month_state.dart';
+import '../services/budget_presentation.dart';
 
 class MonthlyTotalsCards extends StatelessWidget {
-  const MonthlyTotalsCards({required this.totals, super.key});
+  const MonthlyTotalsCards({
+    required this.totals,
+    this.budget,
+    this.onViewBudget,
+    this.onRetryBudget,
+    super.key,
+  });
+  final BudgetMonthState? budget;
+  final VoidCallback? onViewBudget;
+  final VoidCallback? onRetryBudget;
   final MonthlyTotals totals;
+
+  String get _budgetLabel {
+    final state = budget;
+    if (state == null || !state.available) return 'Indisponível';
+    if (state.failure != null) return 'Tentar novamente';
+    if (!state.hasConfirmedLimits) return 'Carregando…';
+    if (state.limits!.isEmpty) return 'Defina limites';
+    final total = state.totalBudget;
+    if (total == null) return 'Aguardando dados';
+    return BudgetPresentation.percentage(total);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,21 +39,30 @@ class MonthlyTotalsCards extends StatelessWidget {
       _TotalCard(
         label: 'Receitas',
         value: income,
-        color: AppColors.primary,
+        color: context.colors.primary,
         icon: Icons.arrow_upward,
       ),
       _TotalCard(
         label: 'Despesas',
         value: expense,
-        color: FinancialVisualTokens.expenseText,
+        color: context.colors.expenseText,
         icon: Icons.arrow_downward,
       ),
-      const _TotalCard(
-        label: 'Meta do mês',
-        value: 'Em breve',
-        color: AppColors.textSecondary,
-        icon: Icons.track_changes_outlined,
-        iconColor: AppColors.warning,
+      InkWell(
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        onTap: budget?.failure != null ? onRetryBudget : onViewBudget,
+        child: _TotalCard(
+          label: 'Meta do mês',
+          value: _budgetLabel,
+          color: switch (budget?.totalBudget?.status) {
+            BudgetStatus.reached => context.colors.error,
+            BudgetStatus.attention => context.colors.textPrimary,
+            _ => context.colors.primary,
+          },
+          icon: Icons.track_changes_outlined,
+          iconColor: context.colors.warning,
+          notice: budget?.isStale == true ? 'Dados desatualizados' : null,
+        ),
       ),
     ];
     return LayoutBuilder(
@@ -61,12 +91,7 @@ class MonthlyTotalsCards extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm),
               Expanded(child: cards[1]),
               const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Tooltip(
-                  message: 'Orçamento indisponível até o M7; nenhum limite foi consultado.',
-                  child: cards[2],
-                ),
-              ),
+              Expanded(child: cards[2]),
             ],
           ),
         );
@@ -82,15 +107,17 @@ class _TotalCard extends StatelessWidget {
     required this.color,
     required this.icon,
     this.iconColor,
+    this.notice,
   });
   final String label, value;
+  final String? notice;
   final Color color;
   final IconData icon;
   final Color? iconColor;
 
   @override
   Widget build(BuildContext context) => Card(
-    shadowColor: AppColors.textPrimary.withValues(alpha: 0.16),
+    shadowColor: context.colors.shadow.withValues(alpha: 0.16),
     child: Padding(
       padding: const EdgeInsets.all(AppSpacing.sm),
       child: Column(
@@ -107,6 +134,8 @@ class _TotalCard extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium!
                 .copyWith(color: color),
           ),
+          if (notice != null)
+            Text(notice!, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     ),

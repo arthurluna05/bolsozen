@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/theme/financial_visual_tokens.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/financial_transaction.dart';
 import '../../domain/services/money.dart';
@@ -35,7 +34,7 @@ class TransactionTile extends StatelessWidget {
     final amount = Text(
       value,
       style: theme.textTheme.labelLarge!.copyWith(
-        color: income ? AppColors.primary : FinancialVisualTokens.expenseText,
+        color: income ? context.colors.primary : context.colors.expenseText,
       ),
     );
     return Semantics(
@@ -46,7 +45,7 @@ class TransactionTile extends StatelessWidget {
           '${income ? 'Receita' : 'Despesa'}, ${transaction.description}, ${transaction.category.label}, $date, $value',
       excludeSemantics: true,
       child: Card(
-        shadowColor: AppColors.textPrimary.withValues(alpha: 0.16),
+        shadowColor: context.colors.shadow.withValues(alpha: 0.16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadii.field),
         ),
@@ -76,7 +75,7 @@ class TransactionTile extends StatelessWidget {
                           ? '${transaction.category.label} · $date'
                           : transaction.category.label,
                       style: theme.textTheme.bodySmall!.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.colors.textSecondary,
                       ),
                     ),
                     if (stack) ...[

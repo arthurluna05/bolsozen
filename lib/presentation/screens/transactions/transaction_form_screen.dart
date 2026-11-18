@@ -187,8 +187,8 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
 
   InputDecoration _decoration(String label, IconData icon) => InputDecoration(
     labelText: label,
-    prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
-    fillColor: AppColors.surface,
+    prefixIcon: Icon(icon, color: context.colors.primary, size: 20),
+    fillColor: context.colors.surface,
     contentPadding: const EdgeInsets.all(AppSpacing.md),
   );
 
@@ -235,8 +235,8 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
         appBar: AppBar(
           title: Text(_editing ? 'Editar transação' : 'Nova transação'),
           centerTitle: true,
-          iconTheme: const IconThemeData(color: AppColors.primary),
-          backgroundColor: AppColors.background,
+          iconTheme: IconThemeData(color: context.colors.primary),
+          backgroundColor: context.colors.background,
           surfaceTintColor: Colors.transparent,
         ),
         body: SafeArea(
@@ -282,11 +282,11 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                                       style: FilledButton.styleFrom(
                                         backgroundColor:
                                             type == TransactionType.income
-                                            ? AppColors.mintSurface
-                                            : FinancialVisualTokens.foodSurface,
+                                            ? context.colors.mintSurface
+                                            : context.colors.expenseSurface,
                                         foregroundColor:
                                             type == TransactionType.income
-                                            ? AppColors.primary
+                                            ? context.colors.primary
                                             : FinancialVisualTokens
                                                   .expenseControlText,
                                         side: _type == type
@@ -294,7 +294,7 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                                                 color:
                                                     type ==
                                                         TransactionType.income
-                                                    ? AppColors.primary
+                                                    ? context.colors.primary
                                                     : FinancialVisualTokens
                                                           .expenseText,
                                               )
@@ -378,13 +378,10 @@ class _TransactionFormScreenState extends State<TransactionFormScreen> {
                             enabled: !_locked,
                             readOnly: true,
                             onTap: _pickDate,
-                            decoration:
-                                _decoration(
-                                  'Data',
-                                  Icons.calendar_today_outlined,
-                                ).copyWith(
-                                  suffixIcon: const Icon(Icons.expand_more),
-                                ),
+                            decoration: _decoration(
+                              'Data',
+                              Icons.calendar_today_outlined,
+                            ).copyWith(suffixIcon: Icon(Icons.expand_more)),
                           ),
                           const SizedBox(height: AppSpacing.base),
                           TextFormField(

@@ -17,7 +17,7 @@ class FinancialMonthSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     decoration: BoxDecoration(
-      border: Border.all(color: AppColors.border),
+      border: Border.all(color: context.colors.border),
       borderRadius: BorderRadius.circular(AppRadii.field),
     ),
     child: Row(
@@ -27,12 +27,12 @@ class FinancialMonthSelector extends StatelessWidget {
           onPressed: month.year == 1 && month.month == 1
               ? null
               : () => onChanged(month.shift(-1)),
-          icon: const Icon(Icons.chevron_left, color: AppColors.primary),
+          icon: Icon(Icons.chevron_left, color: context.colors.primary),
         ),
-        const Icon(
+        Icon(
           Icons.calendar_today_outlined,
           size: 20,
-          color: AppColors.primary,
+          color: context.colors.primary,
         ),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
@@ -54,7 +54,7 @@ class FinancialMonthSelector extends StatelessWidget {
           onPressed: month.year == 9999 && month.month == 12
               ? null
               : () => onChanged(month.shift(1)),
-          icon: const Icon(Icons.chevron_right, color: AppColors.primary),
+          icon: Icon(Icons.chevron_right, color: context.colors.primary),
         ),
       ],
     ),

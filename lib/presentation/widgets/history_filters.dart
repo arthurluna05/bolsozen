@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/theme/financial_visual_tokens.dart';
 import '../../domain/models/category.dart';
 
 class HistoryFilters extends StatelessWidget {
@@ -44,14 +43,14 @@ class HistoryFilters extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'Buscar transação…',
                   isDense: true,
-                  fillColor: AppColors.surfaceMuted,
+                  fillColor: context.colors.surfaceMuted,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                     vertical: AppSpacing.md,
                   ),
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.search,
-                    color: AppColors.textSecondary,
+                    color: context.colors.textSecondary,
                     size: 20,
                   ),
                   suffixIcon: query.text.isEmpty
@@ -63,7 +62,7 @@ class HistoryFilters extends StatelessWidget {
                             query.clear();
                             onQueryChanged('');
                           },
-                          icon: const Icon(Icons.close, size: 20),
+                          icon: Icon(Icons.close, size: 20),
                         ),
                 ),
               ),
@@ -79,10 +78,12 @@ class HistoryFilters extends StatelessWidget {
             onPressed: onCategory,
             style: IconButton.styleFrom(
               minimumSize: const Size(48, 48),
-              foregroundColor: AppColors.primary,
-              backgroundColor: category == null ? null : AppColors.mintSurface,
+              foregroundColor: context.colors.primary,
+              backgroundColor: category == null
+                  ? null
+                  : context.colors.mintSurface,
             ),
-            icon: const Icon(Icons.tune, size: 26),
+            icon: Icon(Icons.tune, size: 26),
           ),
         ],
       ),
@@ -114,18 +115,23 @@ class HistoryFilters extends StatelessWidget {
             runSpacing: AppSpacing.sm,
             children: [
               for (final (value, label, background, foreground) in [
-                (null, 'Todas', AppColors.primary, AppColors.surface),
+                (
+                  null,
+                  'Todas',
+                  context.colors.primary,
+                  context.colors.onPrimary,
+                ),
                 (
                   TransactionType.income,
                   'Receitas',
-                  AppColors.mintSurface,
-                  AppColors.primary,
+                  context.colors.mintSurface,
+                  context.colors.primary,
                 ),
                 (
                   TransactionType.expense,
                   'Despesas',
-                  FinancialVisualTokens.foodSurface,
-                  FinancialVisualTokens.expenseControlText,
+                  context.colors.expenseSurface,
+                  context.colors.expenseControlText,
                 ),
               ])
                 SizedBox(
@@ -150,7 +156,7 @@ class HistoryFilters extends StatelessWidget {
                             width: 2,
                             color: type == value
                                 ? value == null
-                                      ? AppColors.textPrimary
+                                      ? context.colors.textPrimary
                                       : foreground
                                 : Colors.transparent,
                           ),

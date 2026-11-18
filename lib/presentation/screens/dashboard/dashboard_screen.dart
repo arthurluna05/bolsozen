@@ -9,6 +9,7 @@ import '../../../domain/models/user_profile.dart';
 import '../../../domain/models/financial_month.dart';
 import '../../controllers/financial_controller.dart';
 import '../../widgets/balance_card.dart';
+import '../../widgets/theme_toggle.dart';
 import '../../widgets/financial_load_state.dart';
 import '../../widgets/monthly_totals_cards.dart';
 import '../../widgets/category_spending_section.dart';
@@ -23,6 +24,8 @@ class DashboardScreen extends StatefulWidget {
     this.clock,
     this.onAddTransaction,
     this.onViewTransactions,
+    this.onViewBudget,
+    this.onViewReports,
     super.key,
   });
   final FinancialController controller;
@@ -30,6 +33,8 @@ class DashboardScreen extends StatefulWidget {
   final DateTime Function()? clock;
   final VoidCallback? onAddTransaction;
   final VoidCallback? onViewTransactions;
+  final VoidCallback? onViewBudget;
+  final VoidCallback? onViewReports;
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -80,7 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       return;
     }
     final now = _now.toLocal();
-    controller.selectMonth(FinancialMonth.fromDate(now));
+    controller.syncCurrentMonth(now: now);
     final untilBoundary = DateTime(now.year, now.month + 1).difference(now);
     // Apenas relógio local: sem polling de rede; evita limite de timers JS longos.
     final delay = untilBoundary > const Duration(days: 1)
@@ -150,10 +155,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                   tooltip: widget.onAddTransaction == null
                       ? 'Adicionar transação disponível no M5.5.'
                       : 'Adicionar transação',
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.surface,
+                  backgroundColor: context.colors.primary,
+                  foregroundColor: context.colors.onPrimary,
                   shape: const CircleBorder(),
-                  child: const Icon(Icons.add),
+                  child: Icon(Icons.add),
                 ),
               ),
         body: SafeArea(
@@ -176,7 +181,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                     ),
                     Expanded(
                       child: RefreshIndicator(
-                        onRefresh: controller.refresh,
+                        onRefresh: controller.refreshFinancialData,
                         child: SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.all(AppSpacing.base),
@@ -189,7 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                                     child: CircleAvatar(
                                       backgroundColor:
                                           FinancialVisualTokens.avatar,
-                                      foregroundColor: AppColors.surface,
+                                      foregroundColor: context.colors.onPrimary,
                                       child: Text(
                                         profile.displayName.characters.first
                                             .toUpperCase(),
@@ -223,16 +228,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                                       ],
                                     ),
                                   ),
-                                  const ExcludeSemantics(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(AppSpacing.sm),
-                                      child: Icon(
-                                        Icons.notifications_none_outlined,
-                                        color: AppColors.textPrimary,
-                                        size: 24,
-                                      ),
-                                    ),
-                                  ),
+                                  const ThemeToggle(),
                                 ],
                               ),
                               const SizedBox(height: AppSpacing.base),
@@ -253,9 +249,18 @@ class _DashboardScreenState extends State<DashboardScreen>
                                   },
                                 ),
                                 const SizedBox(height: AppSpacing.sm),
-                                MonthlyTotalsCards(totals: summary.totals),
+                                MonthlyTotalsCards(
+                                  totals: summary.totals,
+                                  budget: controller.dashboardBudgetState,
+                                  onViewBudget: widget.onViewBudget,
+                                  onRetryBudget: () => controller
+                                      .refreshBudgets(month: controller.month),
+                                ),
                                 const SizedBox(height: AppSpacing.sm),
-                                CategorySpendingSection(summary: summary),
+                                CategorySpendingSection(
+                                  summary: summary,
+                                  onViewReports: widget.onViewReports,
+                                ),
                                 const SizedBox(height: AppSpacing.sm),
                                 Row(
                                   children: [
@@ -274,7 +279,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                                       TextButton(
                                         onPressed: widget.onViewTransactions,
                                         style: TextButton.styleFrom(
-                                          foregroundColor: AppColors.primary,
+                                          foregroundColor:
+                                              context.colors.primary,
                                           textStyle: Theme.of(context)
                                               .textTheme
                                               .labelMedium,

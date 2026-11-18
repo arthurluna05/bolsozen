@@ -8,8 +8,13 @@ import 'category_icon.dart';
 import 'unavailable_financial_action.dart';
 
 class CategorySpendingSection extends StatelessWidget {
-  const CategorySpendingSection({required this.summary, super.key});
+  const CategorySpendingSection({
+    required this.summary,
+    this.onViewReports,
+    super.key,
+  });
   final FinancialSummary summary;
+  final VoidCallback? onViewReports;
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +33,20 @@ class CategorySpendingSection extends StatelessWidget {
                 ),
               ),
             ),
-            const UnavailableFinancialAction(
-              label: 'Ver mais',
-              availability: 'Detalhamento disponível no M8.',
-            ),
+            if (onViewReports != null)
+              TextButton(
+                onPressed: onViewReports,
+                child: const Text('Ver mais ›'),
+              )
+            else
+              const UnavailableFinancialAction(
+                label: 'Ver mais',
+                availability: 'Abra Relatórios para o detalhamento.',
+              ),
           ],
         ),
         if (spending.isEmpty)
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
             child: Text('Nenhuma despesa nesta competência.'),
           ),
@@ -67,8 +78,8 @@ class CategorySpendingSection extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: item.proportion,
                             minHeight: 8,
-                            color: AppColors.secondary,
-                            backgroundColor: AppColors.surfaceMuted,
+                            color: context.colors.secondary,
+                            backgroundColor: context.colors.surfaceMuted,
                           ),
                         ),
                       ],

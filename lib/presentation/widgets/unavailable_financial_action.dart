@@ -22,7 +22,7 @@ class UnavailableFinancialAction extends StatelessWidget {
       child: TextButton(
         onPressed: null,
         style: TextButton.styleFrom(
-          disabledForegroundColor: AppColors.primary,
+          disabledForegroundColor: context.colors.primary,
           textStyle: Theme.of(context).textTheme.labelMedium,
         ),
         child: Text('$label ›'),

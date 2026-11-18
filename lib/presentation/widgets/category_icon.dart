@@ -9,11 +9,13 @@ class CategoryIcon extends StatelessWidget {
   const CategoryIcon({
     required this.category,
     this.spendingBreakdown = false,
+    this.budgetContext = false,
     this.size = 24,
     super.key,
   });
   final Category category;
   final bool spendingBreakdown;
+  final bool budgetContext;
   final double size;
   IconData get icon => switch (category) {
     Category.food => Icons.restaurant_outlined,
@@ -33,7 +35,8 @@ class CategoryIcon extends StatelessWidget {
       spendingBreakdown
           ? FinancialVisualTokens.shopping
           : FinancialVisualTokens.food,
-    Category.transport => FinancialVisualTokens.transport,
+    Category.transport =>
+      budgetContext ? AppColors.primary : FinancialVisualTokens.transport,
     Category.leisure => FinancialVisualTokens.leisure,
     Category.shopping => FinancialVisualTokens.shopping,
     _ => AppColors.primary,
@@ -43,7 +46,10 @@ class CategoryIcon extends StatelessWidget {
       spendingBreakdown
           ? FinancialVisualTokens.shoppingSurface
           : FinancialVisualTokens.foodSurface,
-    Category.transport => FinancialVisualTokens.transportSurface,
+    Category.transport =>
+      budgetContext
+          ? FinancialVisualTokens.incomeSurface
+          : FinancialVisualTokens.transportSurface,
     Category.leisure => FinancialVisualTokens.leisureSurface,
     Category.shopping => FinancialVisualTokens.shoppingSurface,
     _ => FinancialVisualTokens.incomeSurface,

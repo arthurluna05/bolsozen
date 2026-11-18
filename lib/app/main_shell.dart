@@ -8,10 +8,14 @@ import '../core/theme/app_colors.dart';
 import '../presentation/widgets/transaction_actions_sheet.dart';
 import '../presentation/widgets/delete_transaction_dialog.dart';
 import '../domain/repositories/transaction_repository.dart';
+import '../domain/repositories/budget_repository.dart';
 import '../presentation/controllers/financial_controller.dart';
 import '../presentation/controllers/session_controller.dart';
 import '../presentation/screens/dashboard/dashboard_screen.dart';
+import '../presentation/screens/budgets/budgets_screen.dart';
+import '../presentation/screens/budgets/budget_editor_screen.dart';
 import '../presentation/screens/profile/profile_screen.dart';
+import '../presentation/screens/reports/reports_screen.dart';
 import '../presentation/screens/transactions/transaction_form_screen.dart';
 import '../presentation/screens/transactions/transactions_screen.dart';
 
@@ -21,12 +25,14 @@ class MainShell extends StatefulWidget {
     required this.session,
     required this.profile,
     required this.transactions,
+    this.budgets,
     super.key,
   });
 
   final SessionController session;
   final UserProfile profile;
   final TransactionRepository transactions;
+  final BudgetRepository? budgets;
 
   @override
   State<MainShell> createState() => _MainShellState();
@@ -52,11 +58,36 @@ class _MainShellState extends State<MainShell> {
         widget.session.user?.uid == widget.profile.userId) {
       _financial = FinancialController(
         transactions: widget.transactions,
+        budgets: widget.budgets,
         session: widget.session,
         expectedUserId: widget.profile.userId,
       );
       unawaited(_financial!.load());
+      if (widget.budgets != null) unawaited(_financial!.loadBudgets());
     }
+  }
+
+  Future<void> _openBudgetEditor() async {
+    if (!_ready || _formOpen) return;
+    _formOpen = true;
+    final financial = _financial!;
+    final month = financial.selectedBudgetMonth;
+    try {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute(
+          builder: (_) =>
+              BudgetEditorScreen(controller: financial, month: month),
+        ),
+      );
+    } finally {
+      _formOpen = false;
+    }
+  }
+
+  void _viewBudget() {
+    if (!_ready) return;
+    unawaited(_financial!.selectBudgetMonth(_financial!.month));
+    setState(() => _index = 2);
   }
 
   Future<void> _openTransaction([FinancialTransaction? original]) async {
@@ -92,7 +123,7 @@ class _MainShellState extends State<MainShell> {
         useSafeArea: true,
         isScrollControlled: true,
         showDragHandle: true,
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.colors.surface,
         builder: (_) => TransactionActionsSheet(transaction: original),
       );
     } finally {
@@ -141,19 +172,29 @@ class _MainShellState extends State<MainShell> {
               profile: widget.profile,
               onAddTransaction: _openTransaction,
               onViewTransactions: () => setState(() => _index = 1),
+              onViewBudget: _viewBudget,
+              onViewReports: () => setState(() => _index = 3),
             ),
             TransactionsScreen(
               controller: financial,
               onAddTransaction: _openTransaction,
               onTransactionActions: _openActions,
             ),
+            BudgetsScreen(
+              controller: financial,
+              onEditLimits: _openBudgetEditor,
+            ),
+            ReportsScreen(controller: financial),
             ProfileScreen(session: widget.session, profile: widget.profile),
           ],
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _index,
           onDestinationSelected: (index) {
-            if (_ready) setState(() => _index = index);
+            if (_ready) {
+              setState(() => _index = index);
+              if (index == 2) unawaited(financial.loadBudgets());
+            }
           },
           destinations: const [
             NavigationDestination(
@@ -165,6 +206,16 @@ class _MainShellState extends State<MainShell> {
               icon: Icon(Icons.receipt_long_outlined),
               selectedIcon: Icon(Icons.receipt_long),
               label: 'Transações',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.pie_chart_outline),
+              selectedIcon: Icon(Icons.pie_chart),
+              label: 'Orçamento',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.bar_chart_outlined),
+              selectedIcon: Icon(Icons.bar_chart),
+              label: 'Relatórios',
             ),
             NavigationDestination(
               icon: Icon(Icons.person_outline),

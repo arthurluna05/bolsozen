@@ -4,38 +4,43 @@ import 'app_colors.dart';
 import 'app_spacing.dart';
 
 abstract final class AppTheme {
-  static ThemeData get light {
+  static final ThemeData light = _build(Brightness.light);
+  static final ThemeData dark = _build(Brightness.dark);
+  static ThemeData _build(Brightness brightness) {
+    final p = brightness == Brightness.dark
+        ? AppPalette.dark
+        : AppPalette.light;
     final colors =
         ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          brightness: Brightness.light,
+          seedColor: p.primary,
+          brightness: brightness,
         ).copyWith(
-          primary: AppColors.primary,
-          onPrimary: Colors.white,
-          primaryContainer: AppColors.mintSurface,
-          onPrimaryContainer: AppColors.primary,
-          secondary: AppColors.secondary,
-          onSecondary: AppColors.textPrimary,
-          surface: AppColors.surface,
-          onSurface: AppColors.textPrimary,
-          onSurfaceVariant: AppColors.textSecondary,
-          outline: AppColors.border,
-          error: AppColors.error,
-          onError: AppColors.textPrimary,
+          primary: p.primary,
+          onPrimary: p.onPrimary,
+          primaryContainer: p.mintSurface,
+          onPrimaryContainer: p.primary,
+          secondary: p.secondary,
+          onSecondary: p.textPrimary,
+          surface: p.surface,
+          onSurface: p.textPrimary,
+          onSurfaceVariant: p.textSecondary,
+          outline: p.border,
+          error: p.error,
+          onError: p.onError,
         );
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppRadii.button),
     );
     final buttonStyle = ButtonStyle(
-      minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
-      padding: const WidgetStatePropertyAll(
+      minimumSize: WidgetStatePropertyAll(Size(0, 48)),
+      padding: WidgetStatePropertyAll(
         EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
           vertical: AppSpacing.md,
         ),
       ),
       shape: WidgetStatePropertyAll(shape),
-      textStyle: const WidgetStatePropertyAll(
+      textStyle: WidgetStatePropertyAll(
         TextStyle(
           fontFamily: 'Roboto',
           fontSize: 14,
@@ -45,13 +50,15 @@ abstract final class AppTheme {
     );
     return ThemeData(
       useMaterial3: true,
+      brightness: brightness,
+      extensions: [p],
       fontFamily: 'Roboto',
       colorScheme: colors,
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: p.background,
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.surface,
+        backgroundColor: p.surface,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: AppColors.mintSurface,
+        indicatorColor: p.mintSurface,
         elevation: 0,
         height: 64,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
@@ -59,8 +66,8 @@ abstract final class AppTheme {
           (states) => IconThemeData(
             size: 24,
             color: states.contains(WidgetState.selected)
-                ? AppColors.primary
-                : AppColors.textSecondary,
+                ? p.primary
+                : p.textSecondary,
           ),
         ),
         labelTextStyle: WidgetStateProperty.resolveWith(
@@ -71,13 +78,13 @@ abstract final class AppTheme {
                 ? FontWeight.w600
                 : FontWeight.w400,
             color: states.contains(WidgetState.selected)
-                ? AppColors.primary
-                : AppColors.textSecondary,
+                ? p.primary
+                : p.textSecondary,
           ),
         ),
       ),
       textTheme:
-          const TextTheme(
+          TextTheme(
             displayLarge: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w700,
@@ -170,40 +177,38 @@ abstract final class AppTheme {
             ),
           ).apply(
             fontFamily: 'Roboto',
-            bodyColor: AppColors.textPrimary,
-            displayColor: AppColors.textPrimary,
+            bodyColor: p.textPrimary,
+            displayColor: p.textPrimary,
           ),
       filledButtonTheme: FilledButtonThemeData(
         style: buttonStyle.copyWith(
-          backgroundColor: const WidgetStatePropertyAll(AppColors.primary),
-          foregroundColor: const WidgetStatePropertyAll(Colors.white),
+          backgroundColor: WidgetStatePropertyAll(p.primary),
+          foregroundColor: WidgetStatePropertyAll(p.onPrimary),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: buttonStyle.copyWith(
-          backgroundColor: const WidgetStatePropertyAll(AppColors.mintSurface),
-          foregroundColor: const WidgetStatePropertyAll(AppColors.primary),
-          side: const WidgetStatePropertyAll(
-            BorderSide(color: AppColors.secondary),
-          ),
+          backgroundColor: WidgetStatePropertyAll(p.mintSurface),
+          foregroundColor: WidgetStatePropertyAll(p.primary),
+          side: WidgetStatePropertyAll(BorderSide(color: p.secondary)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        errorStyle: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
+        errorStyle: TextStyle(color: p.textPrimary, fontSize: 12),
         errorMaxLines: 3,
         filled: true,
-        fillColor: AppColors.surfaceMuted,
-        contentPadding: const EdgeInsets.all(AppSpacing.base),
+        fillColor: p.surfaceMuted,
+        contentPadding: EdgeInsets.all(AppSpacing.base),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.field),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadii.field),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: p.border),
         ),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: p.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 1,
         margin: EdgeInsets.zero,

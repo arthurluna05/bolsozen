@@ -35,13 +35,13 @@ class TransactionActionsSheet extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.edit_outlined, color: AppColors.primary),
+          leading: Icon(Icons.edit_outlined, color: context.colors.primary),
           title: const Text('Editar'),
           onTap: () => Navigator.of(context).pop(TransactionAction.edit),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.delete_outline, color: AppColors.error),
+          leading: Icon(Icons.delete_outline, color: context.colors.error),
           title: const Text('Excluir'),
           onTap: () => Navigator.of(context).pop(TransactionAction.delete),
         ),

@@ -6,6 +6,11 @@ import '../models/monthly_budget.dart';
 import 'money.dart';
 
 abstract final class FinancialCalculator {
+  static double? compareExpenses(int currentCents, int previousCents) =>
+      previousCents == 0
+      ? null
+      : (currentCents - previousCents) / previousCents * 100;
+
   /// Entrada deve conter o histórico completo carregado, sem páginas faltantes.
   /// Dados de outros usuários são ignorados, inclusive limites.
   static FinancialSummary summarize({
@@ -82,9 +87,10 @@ abstract final class FinancialCalculator {
         _sum(usage.values.map((u) => u.limitCents)),
       ),
       previousExpenseCents: previous,
-      expenseVariationPercentage: previous == 0
-          ? null
-          : (totals.expenseCents - previous) / previous * 100,
+      expenseVariationPercentage: compareExpenses(
+        totals.expenseCents,
+        previous,
+      ),
       evolution: List.generate(6, (index) => totalsFor(month.shift(index - 5))),
       history: history,
     );
